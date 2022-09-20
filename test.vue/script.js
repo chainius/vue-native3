@@ -2,8 +2,8 @@ import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
 function __VUE_STYLESHEET__(stylesheet) {
     return __REACT_STYLESHEET__.create({
         "text": {
-            "backgroundColor": stylesheet["tjyk59itq1-color"],
-            "color": stylesheet["tjyk59itq1-theme_color"],
+            "backgroundColor": stylesheet["53lynxc0n7-color"],
+            "color": stylesheet["53lynxc0n7-theme_color"],
         },
         "text2": {
             "flexGrow": 1,
@@ -20,8 +20,6 @@ function __VUE_STYLESHEET__(stylesheet) {
 
 import { useCssVars as _useCssVars } from 'vue'
 import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, vShow as _vShow, withCtx as _withCtx, createVNode as _createVNode, withDirectives as _withDirectives, isRef as _isRef, unref as _unref, openBlock as _openBlock, createBlock as _createBlock } from "vue"
-
-const _hoisted_1 = /*#__PURE__*/_createTextVNode("inner slot")
 
 
 
@@ -58,8 +56,8 @@ const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
   setup(__props) {
 
 _useCssVars(_ctx => ({
-  "tjyk59itq1-color": (_ctx.color),
-  "tjyk59itq1-theme_color": (theme.color)
+  "53lynxc0n7-color": (_ctx.color),
+  "53lynxc0n7-theme_color": (theme.color)
 }))
 
 
@@ -86,7 +84,7 @@ return (_ctx, _cache) => {
     default: _withCtx(() => [
       _withDirectives(_createVNode(_component_text, null, {
         default: _withCtx(() => [
-          _createTextVNode(" test.vue " + _toDisplayString(i.value), 1 /* TEXT */)
+          _createTextVNode(" test.vue with v-show " + _toDisplayString(i.value), 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
       }, 512 /* NEED_PATCH */), [
@@ -106,17 +104,6 @@ return (_ctx, _cache) => {
         ]),
         _: 1 /* STABLE */
       }, 512 /* NEED_PATCH */),
-      _createVNode(Lvl1, null, {
-        default: _withCtx(() => [
-          _createVNode(_component_text, null, {
-            default: _withCtx(() => [
-              _hoisted_1
-            ]),
-            _: 1 /* STABLE */
-          })
-        ]),
-        _: 1 /* STABLE */
-      }),
       _createVNode(_unref(Test))
     ]),
     _: 1 /* STABLE */

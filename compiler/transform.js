@@ -12,7 +12,7 @@ function parse(data, options) {
         compiler: {
             parse(source, options) {
                 const res = CompilerDOM.parse(source, options)
-                res.children = res.children.filter((o) => !o.props.find((r) => r.name == remove_tags))
+                res.children = res.children.filter((o) => !o.props || !o.props.find((r) => r.name == remove_tags))
                 return res
             }
         }

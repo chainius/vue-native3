@@ -1,14 +1,14 @@
 <template>
     <view class="text text2">
         <text v-show="b">
-                test.vue {{ i }}
+                test.vue with v-show {{ i }}
         </text>
         <view v-model.lazy="color" />
         <text ref="test" class="text">test.vue {{ i }} {{ color }}</text>
-
+<!-- 
         <lvl1>
             <text>inner slot</text>
-        </lvl1>
+        </lvl1> -->
 
         <Test />
     </view>

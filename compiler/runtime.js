@@ -130,29 +130,14 @@ export function renderSlot(slots, name, props = {}, fallback, noSlotted) {
     return item
 }
 
+import DirectiveComponent from './directives.js'
+
 export function withDirectives(node, directives) {
     node = Object.freeze(Object.assign({
         style: node.props.style,
     }, node))
 
-    for(var directive of directives) {
-        var [handler, value, arg, modifiers] = directive
-        if(typeof(handler) !== 'function')
-            continue
-
-        const binding = {
-            value,
-            arg,
-            modifiers,
-            instance: currentRenderingInstance,
-            dir:      directive,
-            // oldValue: todo use caches
-        }
-
-        handler(node, binding)
-    }
-
-    return node
+    return <DirectiveComponent node={node} directives={directives} instance={currentRenderingInstance} />
 }
 
 export function vModelText() {
@@ -312,10 +297,27 @@ export function isVNode(node) {
     return React.isValidElement(node)
 }
 
-export function vShow(el, { value }) {
-    if(!value) {
-        el.style.display = 'none'
-    }
+// export function vShow(el, { value }) {
+//     if(!value) {
+//         el.style.display = 'none'
+//     }
+// }
+
+export const vShow = {
+    // called before bound element's attributes
+    // or event listeners are applied
+    created(el, { value }) {
+        if(!value) {
+            el.style.display = 'none'
+        }
+    },
+
+    // called before the parent component is updated
+    beforeUpdate(el, { value })  {
+        if(!value) {
+            el.style.display = 'none'
+        }
+    },
 }
 
 export function useCssVars(vars) {

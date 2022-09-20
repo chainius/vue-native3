@@ -12,7 +12,7 @@ var getCurrentInstance = () => {}
 export const CompositionContext = React.createContext({})
 CompositionContext.displayName = 'VueContext'
 
-// const Context = React.createContext(null)
+var $root = null // temporty workarround
 
 // react component wrapper to vue component
 class VueReactComponent extends Component {
@@ -28,6 +28,8 @@ class VueReactComponent extends Component {
 
     #vm = {}
 
+    #exposed = {}
+
     #did_setup_provider = false
     
     #provided = {}
@@ -42,7 +44,11 @@ class VueReactComponent extends Component {
         trigger_props_changed: () => {},
         css_vars: () => ({}),
         stylesheet: {},
-        known_props: {},
+        known_props: {
+            $parent:  true,
+            $slots:   true,
+            children: true,
+        },
         render: null,
     }
     
@@ -61,15 +67,58 @@ class VueReactComponent extends Component {
             $slots:       props.$slots,
             $options:     options,
             $el:          null,
-            $parent:      null, // ToDo
-            $root:        null, // ToDo
+            $parent:      props.$parent || null,
+            $root:        $root,
             $emit:        this.$emit.bind(this),
             $forceUpdate: () => this.forceUpdate(),
             $nextTick:    (cb) => nextTick(cb.bind(this)),
             $watch:       this.$watch.bind(this),
         }
 
+        this.#exposed = this.#vm
         this.$slots = this.#vm.$slots
+
+        var expose_altered = false
+
+        const expose = (obj = {}) => {
+            if(!expose_altered) {
+                expose_altered = true
+
+                this.#exposed = {
+                    get $attrs() {
+                        return this.#vm.$attrs
+                    },
+                    get $props() {
+                        return this.#vm.$props
+                    },
+                }
+
+                function getter(name) {
+                    return this.#vm[name]
+                }
+
+                for(var name in this.#vm) {
+                    Object.defineProperty(this.#exposed, name, {
+                        enumerable: true,
+                        get: getter.bind(this.#vm, name),
+                    })
+                }
+
+                for(var name of options.expose) {
+                    Object.defineProperty(this.#exposed, name, {
+                        enumerable: true,
+                        get: getter.bind(this.#vm, name),
+                    })
+                }
+            }
+
+            for(var key in obj) {
+                this.#exposed[key] = obj[key]
+            }
+        }
+
+        // public exposed instance
+        options.expose && expose()
 
         const $captureError = this.emit_hook.bind(this, 'errorCaptured')
         Object.defineProperty(this.#vm, '$captureError', {
@@ -92,13 +141,15 @@ class VueReactComponent extends Component {
         this.on_hook('errorCaptured', options.errorCaptured, true)
 
         // init component options
-        setup(this, this.#vm, this.#helpers, props) // enable vue featurus on this component
+        setup(this, this.#vm, this.#helpers, props, expose) // enable vue featurus on this component
 
         if(!this.#helpers.render)
             this.#helpers.render = () => (<View />)
 
         // call beforeMount hook
         this.emit_hook('beforeMount')
+
+        $root = $root || this
     }
 
     on_hook(name, cb, bind = false) {
@@ -343,11 +394,11 @@ class VueReactComponent extends Component {
         if(!attacher) {
             if(name == '$el') {
                 attacher = (el) => {
-                    this.#vm.$el = el
+                    this.#vm.$el = el && el._vm || el
                 }
             } else {
                 attacher = (el) => {
-                    this.#vm.$refs[name] = el
+                    this.#vm.$refs[name] = el && el._vm || el
                 }
             }
 
@@ -376,6 +427,10 @@ class VueReactComponent extends Component {
 
     get inheritAttrs() {
         return !(this.#vm.$options.inheritAttrs === false)
+    }
+
+    get _vm() {
+        return this.#exposed
     }
 
     // ----------------- vue instance methods -----------------

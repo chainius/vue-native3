@@ -1,7 +1,7 @@
 const transform = require('./compiler')
 const fs = require('fs')
 
-var file = 'lvl1.vue'
+var file = 'test.vue'
 const data = fs.readFileSync('./'+file+'/index.vue').toString()
 
 const app = transform(data)

@@ -176,15 +176,13 @@ export function withSetup(options) {
     }
 
     // call script setup function
-    return function(vm, helpers) {
+    return function(vm, helpers, props, expose) {
         try {
             const setup_result = options.setup(vm.$props, {
-                expose() {
-                    // toDo
-                },
-                emit:  vm.$emit,
-                slots: vm.$slots,
-                attrs: vm.$attrs,
+                expose: expose,
+                emit:   vm.$emit,
+                slots:  vm.$slots,
+                attrs:  vm.$attrs,
             })
 
             if(typeof(setup_result) == 'function') {
@@ -277,9 +275,9 @@ export function createChain(options, render) {
         }
     }
 
-    return function(instance, vm, helpers, props) {
+    return function(instance, vm, helpers, props, expose) {
         for(var e of fns) {
-            e.call(instance, vm, helpers, props)
+            e.call(instance, vm, helpers, props, expose)
         }
     }
 }

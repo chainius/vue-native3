@@ -18,9 +18,7 @@ export function getCurrentInstance() {
 
 // ----
 
-export function setBlockTracking() {
-    
-}
+export function setBlockTracking() {}
 
 var blockOpened = false
 
@@ -82,8 +80,17 @@ function render(T, props, children, patchFlag, dynamicProps) {
     )
 } 
 
-export const createVNode = render // from inner elements
-export const createElementVNode = render
+function renderWithParent(T, props, children, patchFlag, dynamicProps) {
+    if(currentRenderingInstance) {
+        props = props || {}
+        props.$parent = currentRenderingInstance._vm
+    }
+
+    return render(T, props, children, patchFlag, dynamicProps)
+}
+
+export const createVNode = renderWithParent // from inner elements
+export const createElementVNode = renderWithParent
 
 export const Fragment = '__Fragment__'
 
@@ -107,9 +114,8 @@ export const createElementBlock = (T, props, children, patchFlag, dynamicProps) 
     if(T == Fragment)
         return children || null
 
-    return render(T, props, children, patchFlag, dynamicProps)
+    return renderWithParent(T, props, children, patchFlag, dynamicProps)
 }
-
 
 // ---
 
@@ -151,9 +157,7 @@ export function withDirectives(node, directives) {
     return <DirectiveComponent node={node} directives={directives} instance={currentRenderingInstance} />
 }
 
-export function vModelText() {
-    
-}
+export function vModelText() {}
 
 export function withCtx(cb) {
     return cb

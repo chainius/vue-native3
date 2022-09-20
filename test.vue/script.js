@@ -2,8 +2,8 @@ import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
 function __VUE_STYLESHEET__(stylesheet) {
     return __REACT_STYLESHEET__.create({
         "text": {
-            "backgroundColor": stylesheet["d98y3ok1lt-color"],
-            "color": stylesheet["d98y3ok1lt-theme_color"],
+            "backgroundColor": stylesheet["73mjjfpzuh-color"],
+            "color": stylesheet["73mjjfpzuh-theme_color"],
         },
         "text2": {
             "flexGrow": 1,
@@ -53,11 +53,11 @@ import Lvl1 from '../lvl1.vue/index.vue'
 
     
 const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
-  setup(__props) {
+  setup(__props, { expose }) {
 
 _useCssVars(_ctx => ({
-  "d98y3ok1lt-color": (_ctx.color),
-  "d98y3ok1lt-theme_color": (theme.color)
+  "73mjjfpzuh-color": (_ctx.color),
+  "73mjjfpzuh-theme_color": (theme.color)
 }))
 
 
@@ -74,6 +74,13 @@ _useCssVars(_ctx => ({
     const theme = {
         color: 'white'
     }
+
+    const a = 1
+    
+    expose({
+        a,
+        b
+    })
 
 
 return (_ctx, _cache) => {

@@ -37,6 +37,13 @@
         color: 'white'
     }
 
+    const a = 1
+    
+    defineExpose({
+        a,
+        b
+    })
+
 </script>
 
 

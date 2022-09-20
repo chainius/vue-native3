@@ -13,12 +13,12 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
 
 
 
-    import Lvl1 from '../lvl1.vue/index.vue'
+    // import Lvl1 from '../lvl1.vue/index.vue'
     import Lvl2 from '../lvl2.vue/index.vue'
 
     const __DEFAULT_WITH_TEMPLATE__ = {
         components: {
-            Lvl1,
+            // Lvl1,
             Lvl2,
         },
         name: 'test-component',
@@ -51,7 +51,6 @@ import { resolveComponent as _resolveComponent, createVNode as _createVNode, toD
 function __TEMPLATE_RENDER__(_ctx, _cache) {
   const _component_button = _resolveComponent("button")
   const _component_text = _resolveComponent("text")
-  const _component_Text = _resolveComponent("Text")
   const _component_lvl1 = _resolveComponent("lvl1")
   const _component_lvl2 = _resolveComponent("lvl2")
   const _component_view = _resolveComponent("view")
@@ -75,7 +74,7 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
               class: "text"
             }, {
               default: _withCtx(() => [
-                _createVNode(_component_Text, null, {
+                _createVNode(_component_text, null, {
                   default: _withCtx(() => [
                     _createTextVNode("test.vue " + _toDisplayString(_ctx.i) + " " + _toDisplayString(_ctx.color), 1 /* TEXT */)
                   ]),
@@ -89,7 +88,7 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
               key: "lvl2"
             }, {
               default: _withCtx(() => [
-                _createVNode(_component_Text, null, {
+                _createVNode(_component_text, null, {
                   default: _withCtx(() => [
                     _createTextVNode("test.vue " + _toDisplayString(_ctx.item), 1 /* TEXT */)
                   ]),

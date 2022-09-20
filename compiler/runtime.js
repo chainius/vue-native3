@@ -182,7 +182,9 @@ const components = {
 }
 
 export function resolveComponent(name) {
-    return currentRenderingInstance && currentRenderingInstance.component(name) || components[name] || null
+    const item = currentRenderingInstance && currentRenderingInstance.component(name) || components[name] || null
+    __DEV__ && !item && console.warn(`Component ${name} not found`)
+    return item
 }
 
 export function resolveDynamicComponent(name) {
@@ -224,7 +226,7 @@ export const onDeactivated = createHook('deactivated')
 // ------------------------------------------------------------
 
 export { handleError } from './helpers/errors.js'
-export { createApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component.js'
+export { createApp, createApp as createSSRApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component.js'
 import { useAsync } from "react-async"
 
 export function defineAsyncComponent(options) {

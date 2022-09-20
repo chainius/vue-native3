@@ -2,17 +2,13 @@ import React, { Component } from "react"
 import { StyleSheet, View } from 'react-native'
 import { watchEffect, version, nextTick, camelize, capitalize, hyphenate } from './runtime-bridge.js'
 import { handleError } from './helpers/errors'
+import { attachApp, GlobalContext, CompositionContext } from './app.js'
 import merge from './helpers/merge-mixins'
 import $watch from './helpers/watcher'
 import setup_constructor from './component.features.js'
 
 var setCurrentInstance = () => {}
 var getCurrentInstance = () => {}
-
-export const CompositionContext = React.createContext({})
-CompositionContext.displayName = 'VueContext'
-
-var $root = null // temporty workarround
 
 // react component wrapper to vue component
 class VueReactComponent extends Component {
@@ -38,6 +34,8 @@ class VueReactComponent extends Component {
 
     #refs_attachers = {}
 
+    #global_config = {}
+
     #helpers = {
         watch_render_options: {},
         emit_validators: {},
@@ -55,25 +53,38 @@ class VueReactComponent extends Component {
     // ---
 
     // setup vue instance on constructor
-    constructor(props, options, setup) {
+    constructor(props, options, setup, global_config) {
         super(props)
         setCurrentInstance(this)
+        this.#global_config = global_config
 
         // init vm instance
         this.#vm = {
             $data:        {},
-            // $props:       {}, // auto addded by proxy instance
+            // $props // auto addded by proxy instance
+            // $root  // auto addded by proxy instance
+            // $attrs // auto added
             $refs:        {},
             $slots:       props.$slots,
             $options:     options,
             $el:          null,
             $parent:      props.$parent || null,
-            $root:        $root,
             $emit:        this.$emit.bind(this),
             $forceUpdate: () => this.forceUpdate(),
             $nextTick:    (cb) => nextTick(cb.bind(this)),
             $watch:       this.$watch.bind(this),
         }
+
+        Object.defineProperty(this.#vm, '$attrs', {
+            enumerable: true,
+            get: () => this.$attrs,
+        })
+
+
+        Object.defineProperty(this.#vm, '$root', {
+            enumerable: true,
+            get: () => global_config.$root,
+        })
 
         this.#exposed = this.#vm
         this.$slots = this.#vm.$slots
@@ -85,9 +96,6 @@ class VueReactComponent extends Component {
                 expose_altered = true
 
                 this.#exposed = {
-                    get $attrs() {
-                        return this.#vm.$attrs
-                    },
                     get $props() {
                         return this.#vm.$props
                     },
@@ -125,10 +133,6 @@ class VueReactComponent extends Component {
             get: () => $captureError,
         })
 
-        Object.defineProperty(this.#vm, '$attrs', {
-            get: () => this.$attrs,
-        })
-
         // init hooks
         this.on_hook('beforeCreate', options.beforeCreate, true)
         this.on_hook('created', options.created, true)
@@ -150,8 +154,6 @@ class VueReactComponent extends Component {
 
         // call beforeMount hook
         this.emit_hook('beforeMount')
-
-        $root = $root || this
     }
 
     on_hook(name, cb, bind = false) {
@@ -268,16 +270,24 @@ class VueReactComponent extends Component {
     inject(key, defaultValue, treatDefaultAsFactory = true, from = key) {
         Object.defineProperty(this.#vm, key, {
             get: () => {
-                if(this.context[from] === undefined) {
+                const res = this.context[from] === undefined ? this.#global_config.provides[from] : this.context[from]
+
+                if(res === undefined) {
                     if(typeof(defaultValue) == 'function' && treatDefaultAsFactory)
                         return defaultValue()
 
                     return defaultValue
                 }
 
-                return this.context[from]
+                return res
             },
-            set: (value) => this.context[from] = value
+            set: (value) => {
+                if(this.context[from] !== undefined) {
+                    this.context[from] = value
+                } else if(this.#global_config.provides[from] !== undefined) {
+                    this.#global_config.provides[from] = value
+                }
+            }
         })
     }
 
@@ -337,7 +347,7 @@ class VueReactComponent extends Component {
             return this
         }
 
-        return this.#components[name]
+        return this.#components[name] || this.#global_config.components[name]
     }
 
     directive(name, directive) {
@@ -350,7 +360,7 @@ class VueReactComponent extends Component {
             return this
         }
 
-        return this.#directives[name]
+        return this.#directives[name] || this.#global_config.directives[name]
     }
 
     useCssVars(vars) {
@@ -435,22 +445,6 @@ class VueReactComponent extends Component {
     get _vm() {
         return this.#exposed
     }
-
-    // ----------------- vue instance methods -----------------
-
-    config = {}
-
-    mount() {}
-
-    unmount() {}
-
-    use(plugin, options) {
-        // toDo
-    }
-
-    mixin(mixin) {
-        // toDo
-    }
 }
 
 VueReactComponent.contextType = CompositionContext
@@ -465,17 +459,25 @@ export function defineComponent(app) {
 
     var merged = false
     var setup = null
+    var global_config = null
 
     class VueComponent extends VueReactComponent {
         constructor(props = {}) {
+            global_config = GlobalContext // ToDo use react context
+
             if(!merged) {
-                merge(app, {}) // app.config.optionMergeStrategies ||
+                // global_config = initGlobalConfig()
+
+                app.mixins = app.mixins || []
+                app.mixins = global_config.mixins.concat(app.mixins)
+
+                merge(app, global_config.config.optionMergeStrategies)
                 merged = true
 
                 setup = setup_constructor(app, app.render)
             }
 
-            super(props, app, setup)
+            super(props, app, setup, global_config)
         }
     }
 
@@ -492,8 +494,8 @@ export function defineComponent(app) {
 
 // create vue instance
 export function createApp(options, props) {
-    const component = defineComponent(options)
-    return component.render(props)
+    const app = typeof(options) == 'function' ? options : defineComponent(options)
+    return attachApp(app, props)
 }
 
 export function onInstance(setter, getter) {

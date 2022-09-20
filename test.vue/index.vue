@@ -1,59 +1,32 @@
 <template>
     <view class="text text2">
-        <text v-show="b">
-                test.vue with v-show {{ i }}
-        </text>
-        <view v-model.lazy="color" />
-        <text ref="test" class="text">test.vue {{ i }} {{ color }}</text>
-<!-- 
-        <lvl1>
-            <text>inner slot</text>
-        </lvl1> -->
+        <button title="change" @press="item++" />
 
-        <text :style="{ fontSize: 25, color: 'white', margin: 20 }">test attrs: {{ $attrs }}</text>
+        <text style="color: #fff">test level {{ item % 2 }}</text>
 
-        <Test />
+        <KeepAlive>
+            <lvl1 v-if="item % 2 == 0" key="lvl1" class="text"><Text>test.vue {{ i }} {{ color }}</Text></lvl1>
+            <lvl2 v-else class="text" key="lvl2"><Text>test.vue {{ item }}</Text></lvl2>
+        </KeepAlive>
     </view>
 </template>
 
 
-<script setup>
-
-    import Lvl1 from '../lvl1.vue/index.vue'
-    import Test from './test.js'
-    import { ref } from 'vue'
-
-    const i = ref(0)
-    const b = ref(0)
-
-    setInterval(() => {
-        i.value++
-
-        if(i.value % 2 == 0)
-            b.value++
-    }, 1000)
-
-    const theme = {
-        color: 'white'
-    }
-
-    const a = 1
-    
-    defineExpose({
-        a,
-        b
-    })
-
-</script>
-
-
 <script>
 
+    import Lvl1 from '../lvl1.vue/index.vue'
+    import Lvl2 from '../lvl2.vue/index.vue'
+
     export default {
+        components: {
+            Lvl1,
+            Lvl2,
+        },
         name: 'test-component',
         data() {
             return {
-                color: '#212121'
+                color: '#212121',
+                item: 0,
             }
         },
         mounted() {
@@ -75,10 +48,6 @@
 </script>
 
 <style>
-    .text {
-        backgroundColor: v-bind(color);
-        color: v-bind(theme.color);
-    }
 
     .text2 {
         flex: 1;
@@ -87,4 +56,5 @@
         align-items: center;
         backgroundColor: green;
     }
+
 </style>

@@ -1,3 +1,4 @@
+import { handleError } from './helpers/errors'
 import { watchEffect, camelize, ref, computed } from './runtime-bridge.js'
 import init_props from './helpers/props'
 

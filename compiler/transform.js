@@ -51,7 +51,7 @@ function compile(data, options = {}) {
             style = `import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';\n`
 
             if(app.cssVars.length == 0) {
-                style = style + `const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create(${JSON.stringify(styles, null, 2)}\n\n`
+                style = style + `const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create(${JSON.stringify(styles, null, 2)})\n\n`
             } else {
                 var cssColors = {}
                 for(var x of app.cssVars) {
@@ -83,6 +83,35 @@ function compile(data, options = {}) {
                 if(node.type == 3) {
                     context.removeNode(node)
                 }
+
+                // for(var prop of node.props || []) {
+                    // if(prop.name == 'class') {
+                    //     prop.name = 'bind'
+                    //     prop.modifiers = []
+                    //     prop.type = 2
+                    //     prop.arg = {
+                    //         type: 4,
+                    //         content: 'class',
+                    //         isStatic: true,
+                    //         isConstant: true,
+                    //         loc: prop.loc
+                    //     }
+
+                    //     var classes = {}
+                    //     for(var item of prop.value.content.split(' ')) {
+                    //         classes[item] = true
+                    //     }
+
+                    //     prop.exp = {
+                    //         type: 4,
+                    //         content: JSON.stringify(classes),
+                    //         isStatic: false,
+                    //         constType: 3,
+                    //         loc: prop.loc,
+                    //         identifiers: []
+                    //     }
+                    // }
+                // }
             },
             // isBuiltInComponent(tag) {
             //     console.log('test build in', tag)

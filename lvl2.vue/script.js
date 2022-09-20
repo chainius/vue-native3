@@ -14,11 +14,11 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
 
 
     const __DEFAULT_WITH_TEMPLATE__ = {
-        name: 'lvl1',
+        name: 'lvl2',
         props: {
             title: {
                 type: String,
-                default: 'lvl1'
+                default: 'lvl2'
             }
         },
         data() {
@@ -32,10 +32,10 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
             }
         },
         activated() {
-            console.log('lvl1 activated')
+            console.log('lvl2 activated')
         },
         deactivated() {
-            console.log('lvl1 deactivated')
+            console.log('lvl2 deactivated')
         }
     }
 
@@ -49,12 +49,12 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
 
   return (_openBlock(), _createBlock(_component_touchable, {
     onPress: _ctx.increment,
-    style: {"backgroundColor":"blue"}
+    style: {"backgroundColor":"red"}
   }, {
     default: _withCtx(() => [
       _createVNode(_component_text, { class: "title" }, {
         default: _withCtx(() => [
-          _createTextVNode(_toDisplayString(_ctx.title) + " first", 1 /* TEXT */)
+          _createTextVNode(_toDisplayString(_ctx.title) + " second", 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
       }),

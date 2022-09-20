@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import { StyleSheet, View } from 'react-native'
-import { watchEffect, ref, version, computed, nextTick, camelize, capitalize, hyphenate } from './runtime-bridge.js'
+import { watchEffect, version, nextTick, camelize, capitalize, hyphenate } from './runtime-bridge.js'
 import { handleError } from './helpers/errors'
 import merge from './helpers/merge-mixins'
 import $watch from './helpers/watcher'
@@ -55,7 +55,7 @@ class VueReactComponent extends Component {
     // ---
 
     // setup vue instance on constructor
-    constructor(props, options, props_setup, setup) {
+    constructor(props, options, setup) {
         super(props)
         setCurrentInstance(this)
 
@@ -104,7 +104,7 @@ class VueReactComponent extends Component {
                     })
                 }
 
-                for(var name of options.expose) {
+                for(var name of options.expose || []) {
                     Object.defineProperty(this.#exposed, name, {
                         enumerable: true,
                         get: getter.bind(this.#vm, name),
@@ -139,6 +139,8 @@ class VueReactComponent extends Component {
         this.on_hook('beforeUnmount', options.beforeUnmount, true)
         this.on_hook('unmounted', options.unmounted, true)
         this.on_hook('errorCaptured', options.errorCaptured, true)
+        this.on_hook('activated', options.activated, true)
+        this.on_hook('deactivated', options.deactivated, true)
 
         // init component options
         setup(this, this.#vm, this.#helpers, props, expose) // enable vue featurus on this component
@@ -219,7 +221,7 @@ class VueReactComponent extends Component {
     }
 
     render() {
-        setCurrentInstance(this)
+        setCurrentInstance(this, true)
         var rendering = true
 
         try {
@@ -327,6 +329,7 @@ class VueReactComponent extends Component {
     component(name, component) {
         if(component) {
             const PascalName = capitalize(camelize(name))
+            // component.displayName = component.displayName || name
 
             this.#components[name] = component
             this.#components[PascalName] = component
@@ -461,34 +464,22 @@ export function defineComponent(app) {
         return app
 
     var merged = false
-    var props_setup = false
-    var render = app.render
     var setup = null
 
     class VueComponent extends VueReactComponent {
         constructor(props = {}) {
-            if(render) {
-                app = Object.create(app)
-                app.render = render
+            if(!merged) {
+                merge(app, {}) // app.config.optionMergeStrategies ||
+                merged = true
+
+                setup = setup_constructor(app, app.render)
             }
 
-            super(props, app, props_setup, setup)
+            super(props, app, setup)
         }
     }
 
-    app.$$typeof = View.$$typeof
-    app.render = function(props) {
-        if(!merged) {
-            merge(app, {}) // app.config.optionMergeStrategies ||
-            merged = true
-
-            setup = setup_constructor(app, render)
-        }
-
-        return <VueComponent { ...props} />
-    }
-
-    app.render.$slots = true
+    VueComponent.$slots = true
 
     if(app.name) {
         VueComponent.displayName = app.name
@@ -496,7 +487,7 @@ export function defineComponent(app) {
         VueComponent.displayName = app.__name
     }
 
-    return app
+    return VueComponent
 }
 
 // create vue instance

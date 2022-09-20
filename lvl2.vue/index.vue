@@ -1,6 +1,6 @@
 <template>
-    <touchable @press="increment" style="backgroundColor: blue">
-        <text class="title">{{title}} first</text>
+    <touchable @press="increment" style="backgroundColor: red">
+        <text class="title">{{title}} second</text>
         <text class="value">{{ i }}</text>
     </touchable>
 </template>
@@ -8,11 +8,11 @@
 <script>
 
     export default {
-        name: 'lvl1',
+        name: 'lvl2',
         props: {
             title: {
                 type: String,
-                default: 'lvl1'
+                default: 'lvl2'
             }
         },
         data() {
@@ -26,10 +26,10 @@
             }
         },
         activated() {
-            console.log('lvl1 activated')
+            console.log('lvl2 activated')
         },
         deactivated() {
-            console.log('lvl1 deactivated')
+            console.log('lvl2 deactivated')
         }
     }
 

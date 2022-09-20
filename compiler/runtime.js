@@ -1,6 +1,7 @@
 export * from './runtime-bridge.js'
+export * from './buildin-components.js'
 import React from 'react'
-import { Button, View, Text, StyleSheet } from 'react-native'
+import { Button, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { isMemoSame, mergeProps } from './runtime-bridge.js'
 
 /**
@@ -9,8 +10,12 @@ import { isMemoSame, mergeProps } from './runtime-bridge.js'
  */
 import { onInstance } from './component.js'
 let currentRenderingInstance = null
+var blockOpened = false
 
-onInstance((instance) => currentRenderingInstance = instance, () => currentRenderingInstance)
+onInstance((instance, opening = false) => {
+    currentRenderingInstance = instance
+    blockOpened = opening
+}, () => currentRenderingInstance)
 
 export function getCurrentInstance() {
     return currentRenderingInstance
@@ -20,10 +25,7 @@ export function getCurrentInstance() {
 
 export function setBlockTracking() {}
 
-var blockOpened = false
-
 export function openBlock() {
-    blockOpened = true
     return null
 }
 
@@ -44,6 +46,9 @@ export function h(T, props = {}, children = null) {
 }
 
 function render(T, props, children, patchFlag, dynamicProps) {
+    if(!T)
+        return null
+
     props = props || {}
     props.style = props.style || {}
 
@@ -170,9 +175,10 @@ export function createTextVNode(txt) {
 // ----
 
 const components = {
-    view:   View,
-    button: Button,
-    text:   Text,
+    view:      View,
+    button:    Button,
+    text:      Text,
+    touchable: TouchableOpacity,
 }
 
 export function resolveComponent(name) {

@@ -1,33 +1,31 @@
 import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
-function __VUE_STYLESHEET__(stylesheet) {
-    return __REACT_STYLESHEET__.create({
-        "text": {
-            "backgroundColor": stylesheet["73mjjfpzuh-color"],
-            "color": stylesheet["73mjjfpzuh-theme_color"],
+const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
+  "text2": {
+    "flexGrow": 1,
+    "flexShrink": 1,
+    "flexBasis": 0,
+    "width": "100%",
+    "justifyContent": "center",
+    "alignItems": "center",
+    "backgroundColor": "green"
+  }
+})
+
+
+
+    import Lvl1 from '../lvl1.vue/index.vue'
+    import Lvl2 from '../lvl2.vue/index.vue'
+
+    const __DEFAULT_WITH_TEMPLATE__ = {
+        components: {
+            Lvl1,
+            Lvl2,
         },
-        "text2": {
-            "flexGrow": 1,
-            "flexShrink": 1,
-            "flexBasis": 0,
-            "width": "100%",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "backgroundColor": "green",
-        },
-
-    })
-}
-
-import { useCssVars as _useCssVars } from 'vue'
-import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, vShow as _vShow, withCtx as _withCtx, createVNode as _createVNode, withDirectives as _withDirectives, isRef as _isRef, unref as _unref, openBlock as _openBlock, createBlock as _createBlock } from "vue"
-
-
-
-    const __default__ = {
         name: 'test-component',
         data() {
             return {
-                color: '#212121'
+                color: '#212121',
+                item: 0,
             }
         },
         mounted() {
@@ -47,84 +45,63 @@ import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNod
     }
 
 
-import Lvl1 from '../lvl1.vue/index.vue'
-    import Test from './test.js'
-    import { ref } from 'vue'
 
-    
-const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
-  setup(__props, { expose }) {
+import { resolveComponent as _resolveComponent, createVNode as _createVNode, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, withCtx as _withCtx, openBlock as _openBlock, createBlock as _createBlock, createCommentVNode as _createCommentVNode, KeepAlive as _KeepAlive } from "vue"
 
-_useCssVars(_ctx => ({
-  "73mjjfpzuh-color": (_ctx.color),
-  "73mjjfpzuh-theme_color": (theme.color)
-}))
-
-
-    const i = ref(0)
-    const b = ref(0)
-
-    setInterval(() => {
-        i.value++
-
-        if(i.value % 2 == 0)
-            b.value++
-    }, 1000)
-
-    const theme = {
-        color: 'white'
-    }
-
-    const a = 1
-    
-    expose({
-        a,
-        b
-    })
-
-
-return (_ctx, _cache) => {
+function __TEMPLATE_RENDER__(_ctx, _cache) {
+  const _component_button = _resolveComponent("button")
   const _component_text = _resolveComponent("text")
+  const _component_Text = _resolveComponent("Text")
+  const _component_lvl1 = _resolveComponent("lvl1")
+  const _component_lvl2 = _resolveComponent("lvl2")
   const _component_view = _resolveComponent("view")
 
   return (_openBlock(), _createBlock(_component_view, { class: "text text2" }, {
     default: _withCtx(() => [
-      _withDirectives(_createVNode(_component_text, null, {
+      _createVNode(_component_button, {
+        title: "change",
+        onPress: _cache[0] || (_cache[0] = $event => (_ctx.item++))
+      }),
+      _createVNode(_component_text, { style: {"color":"#fff"} }, {
         default: _withCtx(() => [
-          _createTextVNode(" test.vue with v-show " + _toDisplayString(i.value), 1 /* TEXT */)
-        ]),
-        _: 1 /* STABLE */
-      }, 512 /* NEED_PATCH */), [
-        [_vShow, b.value]
-      ]),
-      _createVNode(_component_view, {
-        modelValue: _ctx.color,
-        "onUpdate:modelValue": _cache[0] || (_cache[0] = $event => (_isRef(color) ? (color).value = $event : null)),
-        modelModifiers: { lazy: true }
-      }, null, 8 /* PROPS */, ["modelValue"]),
-      _createVNode(_component_text, {
-        ref: "test",
-        class: "text"
-      }, {
-        default: _withCtx(() => [
-          _createTextVNode("test.vue " + _toDisplayString(i.value) + " " + _toDisplayString(_ctx.color), 1 /* TEXT */)
-        ]),
-        _: 1 /* STABLE */
-      }, 512 /* NEED_PATCH */),
-      _createVNode(_component_text, { style: { fontSize: 25, color: 'white', margin: 20 } }, {
-        default: _withCtx(() => [
-          _createTextVNode("test attrs: " + _toDisplayString(_ctx.$attrs), 1 /* TEXT */)
+          _createTextVNode("test level " + _toDisplayString(_ctx.item % 2), 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
       }),
-      _createVNode(_unref(Test))
+      (_openBlock(), _createBlock(_KeepAlive, null, [
+        (_ctx.item % 2 == 0)
+          ? (_openBlock(), _createBlock(_component_lvl1, {
+              key: "lvl1",
+              class: "text"
+            }, {
+              default: _withCtx(() => [
+                _createVNode(_component_Text, null, {
+                  default: _withCtx(() => [
+                    _createTextVNode("test.vue " + _toDisplayString(_ctx.i) + " " + _toDisplayString(_ctx.color), 1 /* TEXT */)
+                  ]),
+                  _: 1 /* STABLE */
+                })
+              ]),
+              _: 1 /* STABLE */
+            }))
+          : (_openBlock(), _createBlock(_component_lvl2, {
+              class: "text",
+              key: "lvl2"
+            }, {
+              default: _withCtx(() => [
+                _createVNode(_component_Text, null, {
+                  default: _withCtx(() => [
+                    _createTextVNode("test.vue " + _toDisplayString(_ctx.item), 1 /* TEXT */)
+                  ]),
+                  _: 1 /* STABLE */
+                })
+              ]),
+              _: 1 /* STABLE */
+            }))
+      ], 1024 /* DYNAMIC_SLOTS */))
     ]),
     _: 1 /* STABLE */
   }))
 }
-}
 
-})
-
-__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__
-export default __DEFAULT_WITH_TEMPLATE__
+export default Object.assign({ render: __TEMPLATE_RENDER__, __name: "index", stylesheet: __VUE_STYLESHEET__ }, __DEFAULT_WITH_TEMPLATE__)

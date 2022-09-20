@@ -5,12 +5,20 @@
         </text>
         <view v-model.lazy="color" />
         <text ref="test" class="text">test.vue {{ i }} {{ color }}</text>
+
+        <lvl1>
+            <text>inner slot</text>
+        </lvl1>
+
+        <Test />
     </view>
 </template>
 
 
 <script setup>
 
+    import Lvl1 from '../lvl1.vue/index.vue'
+    import Test from './test.js'
     import { ref } from 'vue'
 
     const i = ref(0)
@@ -19,7 +27,7 @@
     setInterval(() => {
         i.value++
 
-        if(i.value % 10 == 0)
+        if(i.value % 2 == 0)
             b.value++
     }, 1000)
 

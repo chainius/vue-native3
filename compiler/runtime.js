@@ -44,8 +44,6 @@ export function h(T, props = {}, children = null) {
 function render(T, props, children, patchFlag, dynamicProps) {
     props = props || {}
     props.style = props.style || {}
-    props.$slots = children || {}
-    children = props.$slots.default || null
 
     if(props.class && currentRenderingInstance) {
         props.style = StyleSheet.flatten([
@@ -58,20 +56,25 @@ function render(T, props, children, patchFlag, dynamicProps) {
         props.ref = currentRenderingInstance._attachRef(props.ref)
     }
 
-    if(typeof(children) == 'function') {
-        Object.defineProperty(props, 'children', {
-            enumerable: true,
-            get() {
-                return children() || null
-            }
-        })
+    // attach childrens
+    if(T.render && T.render.$slots || T.$slots) {
+        props.$slots = children
     } else {
-        props.children = children
+        children = children && children.default || children || null
+
+        if(typeof(children) == 'function') {
+            children = children(props)
+        }
+    }
+
+    if(!Array.isArray(children)) {
+        children = [ children ]
     }
 
     return React.createElement(
         T,
         props,
+        ...children,
     )
 } 
 
@@ -209,7 +212,7 @@ export const onDeactivated = createHook('deactivated')
 // ------------------------------------------------------------
 
 export { handleError } from './helpers/errors.js'
-export { createApp, defineComponent, defineComponent as defineCustomElement } from './component.js'
+export { createApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component.js'
 import { useAsync } from "react-async"
 
 export function defineAsyncComponent(options) {

@@ -2,8 +2,8 @@ import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
 function __VUE_STYLESHEET__(stylesheet) {
     return __REACT_STYLESHEET__.create({
         "text": {
-            "backgroundColor": stylesheet["64crel8jmx-color"],
-            "color": stylesheet["64crel8jmx-theme_color"],
+            "backgroundColor": stylesheet["5m3rzx7ofv-color"],
+            "color": stylesheet["5m3rzx7ofv-theme_color"],
         },
         "text2": {
             "flexGrow": 1,
@@ -18,8 +18,10 @@ function __VUE_STYLESHEET__(stylesheet) {
     })
 }
 
-import { useCssVars as _useCssVars, unref as _unref } from 'vue'
-import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, vShow as _vShow, withCtx as _withCtx, createVNode as _createVNode, withDirectives as _withDirectives, mergeProps as _mergeProps, isRef as _isRef, openBlock as _openBlock, createBlock as _createBlock } from "vue"
+import { useCssVars as _useCssVars } from 'vue'
+import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, vShow as _vShow, withCtx as _withCtx, createVNode as _createVNode, withDirectives as _withDirectives, isRef as _isRef, unref as _unref, openBlock as _openBlock, createBlock as _createBlock } from "vue"
+
+const _hoisted_1 = /*#__PURE__*/_createTextVNode("inner slot")
 
 
 
@@ -46,7 +48,9 @@ import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNod
     }
 
 
-import { ref } from 'vue'
+import Lvl1 from '../lvl1.vue/index.vue'
+    import Test from './test.js'
+    import { ref } from 'vue'
 
     
 const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
@@ -54,8 +58,8 @@ const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
   setup(__props) {
 
 _useCssVars(_ctx => ({
-  "64crel8jmx-color": (_ctx.color),
-  "64crel8jmx-theme_color": (theme.color)
+  "5m3rzx7ofv-color": (_ctx.color),
+  "5m3rzx7ofv-theme_color": (theme.color)
 }))
 
 
@@ -65,7 +69,7 @@ _useCssVars(_ctx => ({
     setInterval(() => {
         i.value++
 
-        if(i.value % 10 == 0)
+        if(i.value % 2 == 0)
             b.value++
     }, 1000)
 
@@ -88,7 +92,6 @@ return (_ctx, _cache) => {
       }, 512 /* NEED_PATCH */), [
         [_vShow, b.value]
       ]),
-      _createVNode(_component_view, _mergeProps({ a: 'abc', d: 'def' }, { x: "test" }), null, 16 /* FULL_PROPS */),
       _createVNode(_component_view, {
         modelValue: _ctx.color,
         "onUpdate:modelValue": _cache[0] || (_cache[0] = $event => (_isRef(color) ? (color).value = $event : null)),
@@ -102,7 +105,19 @@ return (_ctx, _cache) => {
           _createTextVNode("test.vue " + _toDisplayString(i.value) + " " + _toDisplayString(_ctx.color), 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
-      }, 512 /* NEED_PATCH */)
+      }, 512 /* NEED_PATCH */),
+      _createVNode(Lvl1, null, {
+        default: _withCtx(() => [
+          _createVNode(_component_text, null, {
+            default: _withCtx(() => [
+              _hoisted_1
+            ]),
+            _: 1 /* STABLE */
+          })
+        ]),
+        _: 1 /* STABLE */
+      }),
+      _createVNode(_unref(Test))
     ]),
     _: 1 /* STABLE */
   }))

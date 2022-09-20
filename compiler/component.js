@@ -9,7 +9,7 @@ import init_props from './helpers/props'
 var setCurrentInstance = () => {}
 var getCurrentInstance = () => {}
 
-const CompositionContext = React.createContext({})
+export const CompositionContext = React.createContext({})
 CompositionContext.displayName = 'VueContext'
 
 // const Context = React.createContext(null)
@@ -502,11 +502,11 @@ class VueReactComponent extends Component {
 }
 
 VueReactComponent.contextType = CompositionContext
+VueReactComponent.$slots = true
 
 // --------------------------------------------
 
 import { View } from 'react-native'
-import { objectToString } from "@vue/shared"
 
 // transform options to react component
 export function defineComponent(app) {
@@ -547,6 +547,8 @@ export function defineComponent(app) {
 
         return <VueComponent { ...props} />
     }
+
+    app.render.$slots = true
 
     if(app.name) {
         VueComponent.displayName = app.name

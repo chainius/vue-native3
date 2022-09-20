@@ -41,6 +41,7 @@
 <script>
 
     export default {
+        name: 'test-component',
         data() {
             return {
                 color: '#212121'

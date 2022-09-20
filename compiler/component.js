@@ -1,10 +1,10 @@
 import React, { Component } from "react"
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { watchEffect, ref, version, computed, nextTick, camelize, capitalize, hyphenate } from './runtime-bridge.js'
 import { handleError } from './helpers/errors'
 import merge from './helpers/merge-mixins'
 import $watch from './helpers/watcher'
-import init_props from './helpers/props'
+import setup_constructor from './component.features.js'
 
 var setCurrentInstance = () => {}
 var getCurrentInstance = () => {}
@@ -22,23 +22,11 @@ class VueReactComponent extends Component {
 
     #directives = {}
 
-    #stylesheet = {}
-
-    #css_vars = () => ({})
-
     #hooks = {}
 
     #cache = {}
 
-    #watch_render_options = {}
-
     #vm = {}
-
-    #render = null
-
-    #emit_validators = {}
-
-    #trigger_props_changed = null
 
     #did_setup_provider = false
     
@@ -47,21 +35,22 @@ class VueReactComponent extends Component {
     #provided_with_ctx = null
 
     #refs_attachers = {}
+
+    #helpers = {
+        watch_render_options: {},
+        emit_validators: {},
+        trigger_props_changed: () => {},
+        css_vars: () => ({}),
+        stylesheet: {},
+        render: null,
+    }
     
     // ---
 
     // setup vue instance on constructor
-    constructor(props, options, props_setup) {
+    constructor(props, options, props_setup, setup) {
         super(props)
         setCurrentInstance(this)
-
-        if(__DEV__) {
-            this.#watch_render_options.onTrack = this.emit_hook.bind(this, 'renderTracked')
-            this.#watch_render_options.onTrigger = this.emit_hook.bind(this, 'renderTriggered')
-
-            this.on_hook('renderTriggered', options.renderTriggered, true)
-            this.on_hook('renderTracked', options.renderTracked, true)
-        }
 
         // init vm instance
         this.#vm = {
@@ -88,19 +77,6 @@ class VueReactComponent extends Component {
             get: () => $captureError,
         })
 
-        // setup emit validators
-        if(typeof(options.emits) == 'object' && !Array.isArray(options.emits)) {
-            for(var name in options.emits) {
-                if(typeof(options.emits[name]) == 'function') {
-                    this.#emit_validators[camelize('on-' +name)] = options.emits[name].bind(this.#vm)
-                }
-            }
-        }
-
-        this.#trigger_props_changed = props_setup(this, this.#vm)
-
-        // todo: $attrs should not contains props or events from emits key
-
         // init hooks
         this.on_hook('beforeCreate', options.beforeCreate, true)
         this.on_hook('created', options.created, true)
@@ -112,118 +88,13 @@ class VueReactComponent extends Component {
         this.on_hook('unmounted', options.unmounted, true)
         this.on_hook('errorCaptured', options.errorCaptured, true)
 
-        // call script setup function
-        if(options.setup) {
-            try {
-                const setup_result = options.setup(this.#vm.$props, {
-                    expose() {
-                        // toDo
-                    },
-                    emit:  this.#vm.$emit,
-                    slots: this.#vm.$slots,
-                    attrs: this.#vm.$attrs,
-                })
+        // init component options
+        setup(this, this.#vm, this.#helpers, props) // enable vue featurus on this component
 
-                if(typeof(setup_result) == 'function') {
-                    this.#render = setup_result
-                } else if(typeof(setup_result) == 'object') {
-                    for(var key in setup_result) {
-                        this.#vm[key] = setup_result[key]
-                    }
-                }
-            } catch(e) {
-                handleError(e, this.#vm, 'setup')
-            }
-        }
+        // todo: $attrs should not contains props or events from emits key
 
-        if(!this.#render && typeof(options.render) == 'function')
-            this.#render = options.render.bind(this.#vm)
-
-        if(!this.#render)
-            this.#render = () => null
-
-        // init methods 
-        if(options.methods) {
-            for(var name in options.methods) {
-                this.#vm[name] = options.methods[name].bind(this.#vm)
-            }
-        }
-
-        // init directives 
-        if(options.directives) {
-            for(var name in options.directives) {
-                this.directive(name, options.directives[name])
-            }
-        }
-
-        // register components
-        if(options.components) {
-            for(var name in options.components) {
-                this.component(name, options.components[name])
-            }
-        }
-
-        // call beforeCreate hook
-        this.emit_hook('beforeCreate')
-
-        // attach injects
-        for(var key in options.inject || {}) {
-            var config = options.inject[key] || {}
-            this.inject(key, config.default, true, config.from || key)
-        }
-
-        // attach data
-        if(options.data) {
-            this.#vm.$data = ref(options.data(this.#vm)).value
-            attach(this.#vm.$data, this.#vm)
-        }
-
-        // attach computed variables
-        for(var key in options.computed || {}) {
-            var fn = options.computed[key]
-            if(typeof(fn) == 'function')
-                fn = fn.bind(this.#vm, this.#vm)
-
-            if(typeof(fn.get) == 'function')
-                fn.get = fn.get.bind(this.#vm, this.#vm)
-
-            if(typeof(fn.set) == 'function')
-                fn.set = fn.set.bind(this.#vm)
-
-            const data = computed(fn)
-
-            Object.defineProperty(this.#vm, key, {
-                get: () => data.value,
-                set: value => data.value = value
-            })
-        }
-
-        // attach provide
-        if(typeof(options.provide) == 'function')
-            options.provide = options.provide.call(this.#vm)
-
-        if(options.provide) {
-            for(var key in options.provide) {
-                this.provide(key, options.provide[key])
-            }
-        }
-
-        this.#stylesheet = options.stylesheet || {}
-        if(typeof(this.#stylesheet) == 'function') {
-            const stylesheet = this.#stylesheet.bind(this.#vm)
-            watchEffect(() => {
-                const css_vars = this.#css_vars(this.#vm)
-                this.#stylesheet = stylesheet(css_vars)
-            })
-        }
-
-        // call created hook
-        this.emit_hook('created')
-
-        // setup watchers
-        for(var key in options.watch || {}) {
-            this.$watch(key, options.watch[key])
-        }
+        if(!this.#helpers.render)
+            this.#helpers.render = () => (<View />)
 
         // call beforeMount hook
         this.emit_hook('beforeMount')
@@ -278,7 +149,7 @@ class VueReactComponent extends Component {
 
     shouldComponentUpdate(props) {
         if(props != this.props)
-            this.#trigger_props_changed()
+            this.#helpers.trigger_props_changed()
 
         return false
     }
@@ -300,12 +171,12 @@ class VueReactComponent extends Component {
         try {
             watchEffect(() => {
                 if(rendering === true) {
-                    rendering = this.#render(this.#vm, this.#cache)
+                    rendering = this.#helpers.render(this.#vm, this.#cache)
                     return
                 }
 
                 this.forceUpdate()
-            }, this.#watch_render_options)
+            }, this.#helpers.watch_render_options)
         } catch(e) {
             handleError(e, this.#vm, 'render')
         }
@@ -320,9 +191,9 @@ class VueReactComponent extends Component {
         // replace renderer to include react-native context provider
         if(!this.#did_setup_provider) {
             this.#did_setup_provider = true
-            const render = this.#render
+            const render = this.#helpers.render
 
-            this.#render = (vm, cache) => {
+            this.#helpers.render = (vm, cache) => {
                 if(!this.#provided_with_ctx) {
                     this.#provided_with_ctx = Object.create(this.context)
                     Object.assign(this.#provided_with_ctx, this.#provided)
@@ -384,7 +255,7 @@ class VueReactComponent extends Component {
 
     $emit(name, ...args) {
         name = camelize('on-' +name)
-        if(this.#emit_validators[name] && !this.#emit_validators[name](...args)) {
+        if(this.#helpers.emit_validators[name] && !this.#helpers.emit_validators[name](...args)) {
             return this.#vm
         }
 
@@ -426,14 +297,14 @@ class VueReactComponent extends Component {
     }
 
     useCssVars(vars) {
-        this.#css_vars = vars.bind(this)
+        this.#helpers.css_vars = vars.bind(this)
     }
 
     getClassStylesheet(name) {
         if(!name)
             return null
 
-        var style = this.#stylesheet[name]
+        var style = this.#helpers.stylesheet[name]
         if(style !== undefined)
             return style
 
@@ -444,19 +315,19 @@ class VueReactComponent extends Component {
             if(name == '')
                 continue
 
-            const res = this.#stylesheet[name]
+            const res = this.#helpers.stylesheet[name]
             if(res) {
                 style.push(res)
             }
         }
 
         if(style.length === 0) {
-            this.#stylesheet[name] = null
+            this.#helpers.stylesheet[name] = null
             return null
         }
 
         style = StyleSheet.flatten(style)
-        this.#stylesheet[name] = style // cache mixed classes result for next usage
+        this.#helpers.stylesheet[name] = style // cache mixed classes result for next usage
         return style
     }
 
@@ -506,8 +377,6 @@ VueReactComponent.$slots = true
 
 // --------------------------------------------
 
-import { View } from 'react-native'
-
 // transform options to react component
 export function defineComponent(app) {
     if(app.$$typeof)
@@ -516,6 +385,7 @@ export function defineComponent(app) {
     var merged = false
     var props_setup = false
     var render = app.render
+    var setup = null
 
     class VueComponent extends VueReactComponent {
         constructor(props = {}) {
@@ -524,7 +394,7 @@ export function defineComponent(app) {
                 app.render = render
             }
 
-            super(props, app, props_setup)
+            super(props, app, props_setup, setup)
         }
     }
 
@@ -534,15 +404,7 @@ export function defineComponent(app) {
             merge(app, {}) // app.config.optionMergeStrategies ||
             merged = true
 
-            props_setup = init_props(app.props)
-
-            if(Array.isArray(app.inject)) {
-                var old = app.inject
-                app.inject = {}
-                for(var key in old) {
-                    app.inject[key] = {}
-                }
-            }
+            setup = setup_constructor(app, render)
         }
 
         return <VueComponent { ...props} />
@@ -568,19 +430,4 @@ export function createApp(options, props) {
 export function onInstance(setter, getter) {
     setCurrentInstance = setter
     getCurrentInstance = getter
-}
-
-// --
-
-function attach(data, target, readonly = false) {
-    for(var key in data) {
-        if(key.startsWith('$') || key.startsWith('_'))
-            continue
-
-        const k = key
-        Object.defineProperty(target, key, {
-            get: () => data[k],
-            set: readonly ? () => {} : value => data[k] = value
-        })
-    }
 }

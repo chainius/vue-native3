@@ -119,9 +119,15 @@ export function renderList(items, cb) {
 export function renderSlot(slots, name, props = {}, fallback, noSlotted) {
     var item = slots[name] || fallback
     if(typeof(item) == 'function')
-        return item(props) || null
+        item = item(props)
 
-    return item || null
+    if(!item)
+        return null
+
+    if(Array.isArray(item))
+        return React.createElement(React.Fragment, {}, ...item)
+
+    return item
 }
 
 export function withDirectives(node, directives) {

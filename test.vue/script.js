@@ -2,8 +2,8 @@ import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
 function __VUE_STYLESHEET__(stylesheet) {
     return __REACT_STYLESHEET__.create({
         "text": {
-            "backgroundColor": stylesheet["5m3rzx7ofv-color"],
-            "color": stylesheet["5m3rzx7ofv-theme_color"],
+            "backgroundColor": stylesheet["tjyk59itq1-color"],
+            "color": stylesheet["tjyk59itq1-theme_color"],
         },
         "text2": {
             "flexGrow": 1,
@@ -26,6 +26,7 @@ const _hoisted_1 = /*#__PURE__*/_createTextVNode("inner slot")
 
 
     const __default__ = {
+        name: 'test-component',
         data() {
             return {
                 color: '#212121'
@@ -54,12 +55,11 @@ import Lvl1 from '../lvl1.vue/index.vue'
 
     
 const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
-  __name: 'index',
   setup(__props) {
 
 _useCssVars(_ctx => ({
-  "5m3rzx7ofv-color": (_ctx.color),
-  "5m3rzx7ofv-theme_color": (theme.color)
+  "tjyk59itq1-color": (_ctx.color),
+  "tjyk59itq1-theme_color": (theme.color)
 }))
 
 

@@ -1,7 +1,7 @@
 <template>
     <view>
         <text>testing lvl1 {{ test }}</text>
-        <slot name="abc" x="slot-x">
+        <slot x="slot-x">
             <text>no slot found</text>
         </slot>
     </view>

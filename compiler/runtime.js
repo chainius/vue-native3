@@ -1,0 +1,370 @@
+export * from './runtime-bridge.js'
+import React from 'react'
+import { Button, View, Text, StyleSheet } from 'react-native'
+
+/**
+ * mark the current rendering instance for asset resolution (e.g.
+ * resolveComponent, resolveDirective) during render
+ */
+import { onInstance } from './component.js'
+let currentRenderingInstance = null
+
+onInstance((instance) => currentRenderingInstance = instance, () => currentRenderingInstance)
+
+export function getCurrentInstance() {
+    return currentRenderingInstance
+}
+
+// ----
+
+export function setBlockTracking() {
+    
+}
+
+export function openBlock() {
+    return null
+}
+
+export function createCommentVNode() {
+    return null
+}
+
+export function h(T, props = {}, children = null) {
+    if(typeof(T) == 'string')
+        T = resolveComponent(T)
+
+    if((typeof(props) != 'object' || Array.isArray(props)) && children == null) {
+        children = props
+        props = {}
+    }
+
+    return <T { ...props }>{children}</T>
+}
+
+function render(T, props, children, patchFlag, dynamicProps) {
+    props = props || {}
+    props.style = props.style || {}
+    props.$slots = children || {}
+    children = props.$slots.default || null
+
+    if(props.class && currentRenderingInstance) {
+        props.style = StyleSheet.flatten([
+            currentRenderingInstance.getClassStylesheet(props.class),
+            props.style
+        ])
+    }
+
+    if(props.ref && currentRenderingInstance) {
+        props.ref = currentRenderingInstance._attachRef(props.ref)
+    }
+
+    if(typeof(children) == 'function') {
+        Object.defineProperty(props, 'children', {
+            enumerable: true,
+            get() {
+                return children() || null
+            }
+        })
+    } else {
+        props.children = children
+    }
+
+    return React.createElement(
+        T,
+        props,
+    )
+} 
+
+export const createVNode = render // from inner elements
+export const createElementVNode = render
+
+export const Fragment = '__Fragment__'
+
+// from template root element
+export const createBlock = (T, props, children, patchFlag, dynamicProps) => {
+    props = props || {}
+    props.ref = '$el'
+
+    return render(T, props, children, patchFlag, dynamicProps)
+}
+
+// used with directives
+export const createElementBlock = (T, props, children, patchFlag, dynamicProps) => {
+    if(T == Fragment)
+        return children || null
+
+    return render(T, props, children, patchFlag, dynamicProps)
+}
+
+
+// ---
+
+export function renderList(items, cb) {
+    const res = []
+
+    if(typeof(items) == 'number') {
+        for(var i=0; i<items;i++)
+            res.push(cb(i))
+    } else {
+        for(var i in items)
+            res.push(cb(items[i], i))
+    }
+
+    return res
+}
+
+export function renderSlot(slots, name, props = {}, fallback, noSlotted) {
+    var item = slots[name] || fallback
+    if(typeof(item) == 'function')
+        return item(props) || null
+
+    return item || null
+}
+
+export function withDirectives(node, directives) {
+    node = Object.freeze(Object.assign({
+        style: node.props.style,
+    }, node))
+
+    for(var directive of directives) {
+        var [handler, value, arg, modifiers] = directive
+        if(typeof(handler) !== 'function')
+            continue
+
+        const binding = {
+            value,
+            arg,
+            modifiers,
+            instance: currentRenderingInstance,
+            dir:      directive,
+            // oldValue: todo use caches
+        }
+
+        handler(node, binding)
+    }
+
+    return node
+}
+
+export function vModelText() {
+    
+}
+
+export function withCtx(cb) {
+    return cb
+}
+
+export function createTextVNode(txt) {
+    return txt
+}
+
+// ----
+
+const components = {
+    view:   View,
+    button: Button,
+    text:   Text,
+}
+
+export function resolveComponent(name) {
+    return currentRenderingInstance && currentRenderingInstance.component(name) || components[name] || null
+}
+
+export function resolveDynamicComponent(name) {
+    if(typeof(name) == 'string')
+        return resolveComponent(name)
+
+    return name || null
+}
+
+export function resolveDirective(name) {
+    return currentRenderingInstance && currentRenderingInstance.directive(name) || null
+}
+
+// ------------------------------------------------------------
+// lifecycles
+
+export function createHook(name) {
+    return function(cb) {
+        if(!currentRenderingInstance)
+            return console.warn(name + " called outside of component render function")
+    
+        currentRenderingInstance.on_hook(name, cb)
+    }
+}
+
+export const onBeforeMount = createHook('beforeMount')
+export const onMounted = createHook('mounted')
+export const onBeforeUpdate = createHook('beforeUpdate')
+export const onUpdated = createHook('updated')
+export const onBeforeUnmount = createHook('beforeUnmount')
+export const onUnmounted = createHook('unmounted')
+export const onServerPrefetch = createHook('serverPrefetch')
+export const onRenderTracked = createHook('renderTracked')
+export const onRenderTriggered = createHook('renderTriggered')
+export const onErrorCaptured = createHook('errorCaptured')
+export const onActivated = createHook('activated')
+export const onDeactivated = createHook('deactivated')
+
+// ------------------------------------------------------------
+
+export { handleError } from './helpers/errors.js'
+export { createApp, defineComponent, defineComponent as defineCustomElement } from './component.js'
+import { useAsync } from "react-async"
+
+export function defineAsyncComponent(options) {
+    var loader = options.loader || options
+    var loaded = false
+    var component = null
+
+    // var loadingComponent = options.loadingComponent || (() => (<Text>Loading...</Text>))
+    // var errorComponent = options.errorComponent || (() => (<Text>error</Text>))
+    // var delay = options.delay || 200
+    // var timeout = options.timeout || Infinity
+    // var suspensible = options.suspensible || false
+    //   onError?: (
+    //     error: Error,
+    //     retry: () => void,
+    //     fail: () => void,
+    //     attempts: number
+    //   ) => any
+
+    return function(props) {
+        if(loaded && component == null)
+            return null
+        else if(loaded && component.render)
+            return component.render(props)
+        else if(loaded)
+            return <component {...props} />
+
+        const { data, error, status } = useAsync({
+            promiseFn: loader,
+        })
+
+        if(error)
+            throw error
+
+        if(status != 'pending') {
+            loader = null
+            loaded = true
+        }
+
+        if(!data)
+            return null
+
+        component = data
+        if(component.render)
+            return component.render(props)
+
+        return <component {...props} />
+    }
+}
+
+// ------------------------------------------------------------
+
+export function provide(key, value) {
+    if(!currentRenderingInstance)
+        return console.warn("provide called outside of component render function")
+
+    currentRenderingInstance.provide(key, value)
+}
+
+export function inject(key, defaultValue, treatDefaultAsFactory = true) {
+    if(!currentRenderingInstance)
+        return console.warn("inject called outside of component render function")
+
+    currentRenderingInstance.inject(key, defaultValue, treatDefaultAsFactory)
+}
+
+// ------------------------------------------------------------
+
+import { isMemoSame } from './runtime-bridge.js'
+
+export function withMemo(memo, render, cache, index) {
+    const cached = cache[index]
+    if (cached && isMemoSame(cached, memo)) {
+        return cached.render
+    }
+
+    const ret = render()
+    cache[index] = {
+        memo:   memo.slice(),
+        render: ret,
+    }
+
+    return ret
+}
+
+export function cloneVNode(node, props) {
+    return React.cloneElement(node, props)
+}
+
+export function isVNode(node) {
+    return React.isValidElement(node)
+}
+
+export function vShow(el, { value }) {
+    if(!value) {
+        el.style.display = 'none'
+    }
+}
+
+export function useCssVars(vars) {
+    if(!currentRenderingInstance)
+        return console.warn("useCssVars called outside of component render function")
+
+    currentRenderingInstance.useCssVars(vars)
+}
+
+export function useSlots() {
+    if(!currentRenderingInstance)
+        return console.warn("useCssVars called outside of component render function")
+
+    return currentRenderingInstance.$slots
+}
+
+export function useAttrs() {
+    if(!currentRenderingInstance)
+        return console.warn("useCssVars called outside of component render function")
+
+    return currentRenderingInstance.$attrs
+}
+
+export function withAsyncContext(ctx) {
+    if(!currentRenderingInstance)
+        return console.warn("withAsyncContext called outside of component render function")
+
+    var current = currentRenderingInstance
+    return [ctx(), () => currentRenderingInstance = current]
+}
+
+// TODO: exported from vue:
+// exports.BaseTransition = BaseTransition;
+// exports.Comment = Comment;
+// exports.KeepAlive = KeepAlive;
+// exports.Static = Static;
+// exports.Suspense = Suspense;
+// exports.Teleport = Teleport;
+// exports.Text = Text;
+
+// exports.callWithAsyncErrorHandling = callWithAsyncErrorHandling;
+// exports.callWithErrorHandling = callWithErrorHandling;
+
+// exports.createHydrationRenderer = createHydrationRenderer;
+// exports.createPropsRestProxy = createPropsRestProxy;
+// exports.createSlots = createSlots;
+// exports.createStaticVNode = createStaticVNode;
+// exports.getTransitionRawChildren = getTransitionRawChildren;
+// exports.initCustomFormatter = initCustomFormatter;
+// exports.popScopeId = popScopeId;
+// exports.pushScopeId = pushScopeId;
+// exports.queuePostFlushCb = queuePostFlushCb;
+// exports.registerRuntimeCompiler = registerRuntimeCompiler;
+// exports.resolveFilter = resolveFilter;
+// exports.resolveTransitionHooks = resolveTransitionHooks;
+// exports.setDevtoolsHook = setDevtoolsHook;
+// exports.setTransitionHooks = setTransitionHooks;
+// exports.transformVNodeArgs = transformVNodeArgs;
+// exports.useSSRContext = useSSRContext;
+// exports.useTransitionState = useTransitionState;
+// exports.withScopeId = withScopeId;

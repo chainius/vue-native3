@@ -1,0 +1,72 @@
+<template>
+    <view class="text text2">
+        <text v-show="b">
+                test.vue {{ i }}
+        </text>
+        <view v-model.lazy="color" />
+        <text ref="test" class="text">test.vue {{ i }} {{ color }}</text>
+    </view>
+</template>
+
+
+<script setup>
+
+    import { ref } from 'vue'
+
+    const i = ref(0)
+    const b = ref(0)
+
+    setInterval(() => {
+        i.value++
+
+        if(i.value % 10 == 0)
+            b.value++
+    }, 1000)
+
+    const theme = {
+        color: 'white'
+    }
+
+</script>
+
+
+<script>
+
+    export default {
+        data() {
+            return {
+                color: '#212121'
+            }
+        },
+        mounted() {
+            var i = 0 
+            var colors = [
+                'blue',
+                'purple',
+                'black',
+                'red',
+            ]
+
+            setInterval(() => {
+                i++
+                this.color = colors[i%colors.length]
+            }, 1000)
+        },
+    }
+
+</script>
+
+<style>
+    .text {
+        backgroundColor: v-bind(color);
+        color: v-bind(theme.color);
+    }
+
+    .text2 {
+        flex: 1;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        backgroundColor: green;
+    }
+</style>

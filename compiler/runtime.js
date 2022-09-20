@@ -1,6 +1,7 @@
 export * from './runtime-bridge.js'
 import React from 'react'
 import { Button, View, Text, StyleSheet } from 'react-native'
+import { isMemoSame, mergeProps } from './runtime-bridge.js'
 
 /**
  * mark the current rendering instance for asset resolution (e.g.
@@ -21,7 +22,10 @@ export function setBlockTracking() {
     
 }
 
+var blockOpened = false
+
 export function openBlock() {
+    blockOpened = true
     return null
 }
 
@@ -87,6 +91,13 @@ export const Fragment = '__Fragment__'
 export const createBlock = (T, props, children, patchFlag, dynamicProps) => {
     props = props || {}
     props.ref = '$el'
+
+    if(blockOpened) {
+        blockOpened = false
+        if(currentRenderingInstance && currentRenderingInstance.inheritAttrs) {
+            props = mergeProps(props, currentRenderingInstance.$attrs)
+        }
+    }
 
     return render(T, props, children, patchFlag, dynamicProps)
 }
@@ -271,8 +282,6 @@ export function inject(key, defaultValue, treatDefaultAsFactory = true) {
 }
 
 // ------------------------------------------------------------
-
-import { isMemoSame } from './runtime-bridge.js'
 
 export function withMemo(memo, render, cache, index) {
     const cached = cache[index]

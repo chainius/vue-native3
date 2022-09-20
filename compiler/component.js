@@ -42,6 +42,7 @@ class VueReactComponent extends Component {
         trigger_props_changed: () => {},
         css_vars: () => ({}),
         stylesheet: {},
+        known_props: {},
         render: null,
     }
     
@@ -56,7 +57,6 @@ class VueReactComponent extends Component {
         this.#vm = {
             $data:        {},
             // $props:       {}, // auto addded by proxy instance
-            $attrs:       {}, // toDo shallowReadonly
             $refs:        {},
             $slots:       props.$slots,
             $options:     options,
@@ -70,11 +70,14 @@ class VueReactComponent extends Component {
         }
 
         this.$slots = this.#vm.$slots
-        this.$attrs = this.#vm.$attrs
 
         const $captureError = this.emit_hook.bind(this, 'errorCaptured')
         Object.defineProperty(this.#vm, '$captureError', {
             get: () => $captureError,
+        })
+
+        Object.defineProperty(this.#vm, '$attrs', {
+            get: () => this.$attrs,
         })
 
         // init hooks
@@ -90,8 +93,6 @@ class VueReactComponent extends Component {
 
         // init component options
         setup(this, this.#vm, this.#helpers, props) // enable vue featurus on this component
-
-        // todo: $attrs should not contains props or events from emits key
 
         if(!this.#helpers.render)
             this.#helpers.render = () => (<View />)
@@ -148,8 +149,10 @@ class VueReactComponent extends Component {
     }
 
     shouldComponentUpdate(props) {
-        if(props != this.props)
+        if(props != this.props) {
+            delete this.#helpers.attrs
             this.#helpers.trigger_props_changed()
+        }
 
         return false
     }
@@ -353,6 +356,26 @@ class VueReactComponent extends Component {
         
         
         return attacher
+    }
+
+    get $attrs() {
+        if(this.#helpers.attrs)
+            return this.#helpers.attrs
+
+        var attrs = {}
+        for(var key in this.props) {
+            if(this.#helpers.known_props[key])
+                continue
+
+            attrs[key] = this.props[key]
+        }
+
+        this.#helpers.attrs = attrs
+        return attrs
+    }
+
+    get inheritAttrs() {
+        return !(this.#vm.$options.inheritAttrs === false)
     }
 
     // ----------------- vue instance methods -----------------

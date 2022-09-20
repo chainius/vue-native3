@@ -13,26 +13,42 @@ export function withRenderOptions(options) {
 }
 
 // enable emit options
-export function withEmitOptions(options) {
+export function withEmits(options) {
     // setup emit validators
-    if(typeof(options.emits) != 'object' || !Array.isArray(options.emits))
+    if(typeof(options.emits) != 'object')
         return
 
     var has_data = false
     var res = {}
-    for(var name in options.emits) {
-        if(typeof(options.emits[name]) == 'function') {
-            has_data = true
-            res[camelize('on-' +name)] = options.emits[name]
+    var additional = []
+
+    if(Array.isArray(options.emits)) {
+        additional = options.emits.map((name) => camelize('on-' +name))
+    } else {
+
+        for(var name in options.emits) {
+            var subName = camelize('on-' +name)
+            if(typeof(options.emits[name]) == 'function') {
+                has_data = true
+                res[subName] = options.emits[name]
+            } else {
+                additional.push(subName)
+            }
         }
+
     }
 
-    if(!has_data)
+    if(!has_data && additional.length == 0)
         return
 
     // return constructor
     return function(vm, helpers) {
+        for(var name of additional) {
+            helpers.known_props[name] = true
+        }
+
         for(var name in res) {
+            helpers.known_props[name] = true
             helpers.emit_validators[name] = res[name].bind(vm)
         }
     }
@@ -45,6 +61,10 @@ export function withProps(options) {
 
     props_setup = init_props(options.props)
     return function(vm, helpers) {
+        for(var prop in options.props) {
+            helpers.known_props[prop] = true
+        }
+
         helpers.trigger_props_changed = props_setup(this, vm)
     }
 }
@@ -270,7 +290,7 @@ export default function setup(options, render) {
         options,
         render,
         __DEV__ && withRenderOptions,
-        withEmitOptions,
+        withEmits,
         withProps,
         withSetup,
         withRender,

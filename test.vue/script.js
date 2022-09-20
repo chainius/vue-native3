@@ -2,8 +2,8 @@ import { StyleSheet as __REACT_STYLESHEET__ } from 'react-native';
 function __VUE_STYLESHEET__(stylesheet) {
     return __REACT_STYLESHEET__.create({
         "text": {
-            "backgroundColor": stylesheet["53lynxc0n7-color"],
-            "color": stylesheet["53lynxc0n7-theme_color"],
+            "backgroundColor": stylesheet["d98y3ok1lt-color"],
+            "color": stylesheet["d98y3ok1lt-theme_color"],
         },
         "text2": {
             "flexGrow": 1,
@@ -56,8 +56,8 @@ const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
   setup(__props) {
 
 _useCssVars(_ctx => ({
-  "53lynxc0n7-color": (_ctx.color),
-  "53lynxc0n7-theme_color": (theme.color)
+  "d98y3ok1lt-color": (_ctx.color),
+  "d98y3ok1lt-theme_color": (theme.color)
 }))
 
 
@@ -104,6 +104,12 @@ return (_ctx, _cache) => {
         ]),
         _: 1 /* STABLE */
       }, 512 /* NEED_PATCH */),
+      _createVNode(_component_text, { style: { fontSize: 25, color: 'white', margin: 20 } }, {
+        default: _withCtx(() => [
+          _createTextVNode("test attrs: " + _toDisplayString(_ctx.$attrs), 1 /* TEXT */)
+        ]),
+        _: 1 /* STABLE */
+      }),
       _createVNode(_unref(Test))
     ]),
     _: 1 /* STABLE */

@@ -10,6 +10,8 @@
             <text>inner slot</text>
         </lvl1> -->
 
+        <text :style="{ fontSize: 25, color: 'white', margin: 20 }">test attrs: {{ $attrs }}</text>
+
         <Test />
     </view>
 </template>

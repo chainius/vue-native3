@@ -22,7 +22,7 @@ class App extends React.Component {
         return (
             <View style={styles.container}>
                 {/* <Text>Open up App.js to start working on your app!</Text> */}
-                <Test onTest={(a, b, c) => console.log('test event received', a, b, c)} test={"counter " + this.state.i} />
+                <Test onTest={(a, b, c) => console.log('test event received', a, b, c)} test={"counter " + this.state.i}  style={{ backgroundColor: 'black' }} />
                 <StatusBar style="auto" />
             </View>
         )

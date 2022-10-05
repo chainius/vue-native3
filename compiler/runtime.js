@@ -239,55 +239,6 @@ export const onDeactivated = createHook('deactivated')
 
 export { handleError } from './helpers/errors.js'
 export { createApp, createApp as createSSRApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component.js'
-import { useAsync } from "react-async"
-
-export function defineAsyncComponent(options) {
-    var loader = options.loader || options
-    var loaded = false
-    var component = null
-
-    // var loadingComponent = options.loadingComponent || (() => (<Text>Loading...</Text>))
-    // var errorComponent = options.errorComponent || (() => (<Text>error</Text>))
-    // var delay = options.delay || 200
-    // var timeout = options.timeout || Infinity
-    // var suspensible = options.suspensible || false
-    //   onError?: (
-    //     error: Error,
-    //     retry: () => void,
-    //     fail: () => void,
-    //     attempts: number
-    //   ) => any
-
-    return function(props) {
-        if(loaded && component == null)
-            return null
-        else if(loaded && component.render)
-            return component.render(props)
-        else if(loaded)
-            return <component {...props} />
-
-        const { data, error, status } = useAsync({
-            promiseFn: loader,
-        })
-
-        if(error)
-            throw error
-
-        if(status != 'pending') {
-            loader = null
-            loaded = true
-        }
-
-        if(!data)
-            return null
-
-        component = data
-        if(component.render)
-            return component.render(props)
-
-        return <component {...props} />
-    }
-}
 
 // ------------------------------------------------------------
 

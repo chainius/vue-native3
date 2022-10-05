@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { handleError } from '../helpers/errors'
 
 export class Suspense extends React.PureComponent {
@@ -111,3 +111,116 @@ export class Suspense extends React.PureComponent {
 }
 
 Suspense.$slots = true
+
+// --------------------
+
+export function defineAsyncComponent(options) {
+    if(typeof(options) == 'function') {
+        options = { loader: options }
+    }
+
+    if(options.delay === undefined)
+        options.delay = 200
+
+    // delay?: number // TODO
+    // timeout?: number // TODO
+    // suspensible?: boolean
+
+    var setters = {}
+    var id = 0
+    var attempts = 1
+
+    const payload = {
+        _result: null,
+        _status: -1,
+    }
+
+    function start_loader() {
+        payload._status = 0
+
+        options.loader().then(r => {
+            payload._result = r.default
+            payload._status = 1
+            return null
+        }).catch(err => {
+            if(options.onError) {
+                var retry = false
+                options.onError(err, () => {
+                    retry = true
+                }, () => {}, attempts)
+
+                if(retry) {
+                    attempts++
+                    setImmediate(start_loader)
+                    throw('retry')
+                }
+            } else {
+                // TODO uses vue handler
+            }
+
+            payload._result = () => null
+            payload._status = 2
+
+            return {
+                component: options.errorComponent ? <options.errorComponent /> : null,
+            }
+        }).then((res) => {
+            var n = setters
+            setters = null
+
+            for(var i in n) {
+                n[i](res)
+            }
+        }).catch((e) => {
+            if(e == 'retry')
+                return
+
+            console.error(e) // TODO uses vue handler
+        })
+    }
+
+    // create render function that will handle states till async component is loaded
+    payload._result = function render(props) {
+        const [data, setData] = useState({
+            id:        id++,
+            component: options.loadingComponent && options.delay <= 0 ? <options.loadingComponent /> : null,
+        });
+
+        // add changes listener
+        useEffect(() => {
+            if(setters === null)
+                return
+
+            var id = data.id
+            setters[id] = setData
+            return () => {
+                if(setters !== null) {
+                    delete setters[id]
+                }
+            };
+        });
+
+        // return loaded component
+        if(payload._status == 1) {
+            return payload._result(props)
+        }
+
+        if(payload._status == -1) {
+            start_loader()
+        }
+
+        return data.component
+    }
+
+    // return suspensible component
+    return {
+        $$typeof: Symbol.for('react.lazy'),
+        _init: function(payload, suspense = false) {
+            if(payload._status < 1 && options.suspensible !== false && suspense)
+                return options.loader
+
+            return payload._result
+        },
+        _payload: payload,
+    }
+}

@@ -1,5 +1,5 @@
 export * from './runtime-bridge.js'
-export * from './buildin-components.js'
+export * from './buildin'
 import React from 'react'
 import { Button, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { isMemoSame, mergeProps } from './runtime-bridge.js'
@@ -102,13 +102,19 @@ export const Fragment = '__Fragment__'
 // from template root element
 export const createBlock = (T, props, children, patchFlag, dynamicProps) => {
     props = props || {}
-    props.ref = '$el'
+
 
     if(blockOpened) {
         blockOpened = false
+        if(typeof(T) != 'function') {
+            props.ref = '$el'
+        }
+
         if(currentRenderingInstance && currentRenderingInstance.inheritAttrs) {
             props = mergeProps(props, currentRenderingInstance.$attrs)
         }
+    } else if(currentRenderingInstance) {
+        props.$parent = currentRenderingInstance._vm
     }
 
     return render(T, props, children, patchFlag, dynamicProps)
@@ -174,11 +180,17 @@ export function createTextVNode(txt) {
 
 // ----
 
+import { KeepAlive, Suspense } from './buildin'
+
 const components = {
-    view:      View,
-    button:    Button,
-    text:      Text,
-    touchable: TouchableOpacity,
+    view:          View,
+    button:        Button,
+    text:          Text,
+    touchable:     TouchableOpacity,
+    'keep-alive':  KeepAlive,
+    KeepAlive:     KeepAlive,
+    suspense:      Suspense,
+    Suspense:      Suspense,
 }
 
 export function resolveComponent(name) {
@@ -373,9 +385,7 @@ export function withAsyncContext(ctx) {
 // TODO: exported from vue:
 // exports.BaseTransition = BaseTransition;
 // exports.Comment = Comment;
-// exports.KeepAlive = KeepAlive;
 // exports.Static = Static;
-// exports.Suspense = Suspense;
 // exports.Teleport = Teleport;
 // exports.Text = Text;
 

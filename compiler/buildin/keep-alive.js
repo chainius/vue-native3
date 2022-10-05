@@ -5,11 +5,9 @@ import shared from '@vue/shared'
 function matches(pattern, name) {
     if (shared.isArray(pattern)) {
         return pattern.some((p) => matches(p, name));
-    }
-    else if (shared.isString(pattern)) {
+    } else if (shared.isString(pattern)) {
         return pattern.split(',').includes(name);
-    }
-    else if (pattern.test) {
+    } else if (pattern.test) {
         return pattern.test(name);
     }
     /* istanbul ignore next */

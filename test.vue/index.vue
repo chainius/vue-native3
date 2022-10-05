@@ -1,13 +1,19 @@
 <template>
     <view class="text text2">
-        <button title="change" @press="item++" />
+        <!-- <button title="change" @press="item++" />
 
-        <text style="color: #fff">test level {{ item % 2 }}</text>
+        <text style="color: #fff">test level {{ item % 2 }}</text> -->
 
-        <KeepAlive>
-            <lvl1 v-if="item % 2 == 0" key="lvl1" class="text"><text>test.vue {{ i }} {{ color }}</text></lvl1>
-            <lvl2 v-else class="text" key="lvl2"><text>test.vue {{ item }}</text></lvl2>
-        </KeepAlive>
+        <suspense @pending="onPending" @fallback="onFallback" @resolve="onResolve" timeout="1000">
+            <lvl1 key="lvl1" class="text"><text>test.vue {{ i }} {{ color }}</text></lvl1>
+            <text>normal component</text>
+
+            <template #fallback>
+               <text>Loading...</text>
+            </template>
+        </suspense>
+
+        <!-- <lvl2 key="lvl2" class="text"><text>test.vue {{ item }}</text></lvl2> -->
     </view>
 </template>
 
@@ -23,6 +29,9 @@
             Lvl2,
         },
         name: 'test-component',
+        errorCaptured(e) {
+            console.log('error captured from component', e)
+        },
         data() {
             return {
                 color: '#212121',
@@ -43,6 +52,17 @@
                 this.color = colors[i%colors.length]
             }, 1000)
         },
+        methods: {
+            onPending() {
+                console.log('pending process started')
+            },
+            onFallback() {
+                console.log('showing fallback')
+            },
+            onResolve() {
+                console.log('suspense resolved')
+            }
+        }
     }
 
 </script>

@@ -5,6 +5,16 @@
     </touchable>
 </template>
 
+<script setup>
+
+    import { nextTick } from 'vue'
+
+    await nextTick()
+
+    console.log('next tick reached')
+
+</script>
+
 <script>
 
     export default {

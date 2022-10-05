@@ -11,9 +11,12 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
   }
 })
 
+import { withAsyncContext as _withAsyncContext } from 'vue'
+import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, openBlock as _openBlock, createBlock as _createBlock } from "vue"
 
 
-    const __DEFAULT_WITH_TEMPLATE__ = {
+
+    const __default__ = {
         name: 'lvl1',
         props: {
             title: {
@@ -40,10 +43,27 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
     }
 
 
+import { nextTick } from 'vue'
 
-import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, openBlock as _openBlock, createBlock as _createBlock } from "vue"
+    
+const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
+  async setup(__props) {
 
-function __TEMPLATE_RENDER__(_ctx, _cache) {
+let __temp, __restore
+
+
+    ;(
+  ([__temp,__restore] = _withAsyncContext(() => nextTick())),
+  await __temp,
+  __restore()
+)
+
+    console.log('next tick reached')
+
+    const r = 'test'
+
+
+return (_ctx, _cache) => {
   const _component_text = _resolveComponent("text")
   const _component_touchable = _resolveComponent("touchable")
 
@@ -54,7 +74,7 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
     default: _withCtx(() => [
       _createVNode(_component_text, { class: "title" }, {
         default: _withCtx(() => [
-          _createTextVNode(_toDisplayString(_ctx.title) + " first", 1 /* TEXT */)
+          _createTextVNode(_toDisplayString(__props.title) + " first", 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
       }),
@@ -68,5 +88,9 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
     _: 1 /* STABLE */
   }, 8 /* PROPS */, ["onPress"]))
 }
+}
 
-export default Object.assign({ render: __TEMPLATE_RENDER__, __name: "index", stylesheet: __VUE_STYLESHEET__ }, __DEFAULT_WITH_TEMPLATE__)
+})
+
+__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__
+export default __DEFAULT_WITH_TEMPLATE__

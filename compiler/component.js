@@ -86,6 +86,16 @@ class VueReactComponent extends Component {
             get: () => global_config.$root,
         })
 
+        this.#vm.$captureError = (e, instance, type) => {
+            if(this.emit_hook('errorCaptured', e, instance, type))
+                return true
+
+            if(global_config.config.errorHandler) {
+                global_config.config.errorHandler(e, instance, type)
+                return true
+            }
+        }
+
         this.#exposed = this.#vm
         this.$slots = this.#vm.$slots
 
@@ -127,16 +137,6 @@ class VueReactComponent extends Component {
 
         // public exposed instance
         options.expose && expose()
-
-        this.#vm.$captureError = (e, instance, type) => {
-            if(this.emit_hook('errorCaptured', e, instance, type))
-                return true
-
-            if(global_config.config.errorHandler) {
-                global_config.config.errorHandler(e, instance, type)
-                return true
-            }
-        }
 
         // init hooks
         this.on_hook('beforeCreate', options.beforeCreate, true)
@@ -423,8 +423,7 @@ class VueReactComponent extends Component {
 
             this.#refs_attachers[name] = attacher
         }
-        
-        
+
         return attacher
     }
 

@@ -5,7 +5,7 @@ import { handleError } from './helpers/errors'
 import { attachApp, GlobalContext, CompositionContext } from './app.js'
 import merge from './helpers/merge-mixins'
 import $watch from './helpers/watcher'
-import setup_constructor from './component.features.js'
+import setup_constructor, { attach } from './component.features.js'
 
 var setCurrentInstance = () => {}
 var getCurrentInstance = () => {}
@@ -128,10 +128,15 @@ class VueReactComponent extends Component {
         // public exposed instance
         options.expose && expose()
 
-        const $captureError = this.emit_hook.bind(this, 'errorCaptured')
-        Object.defineProperty(this.#vm, '$captureError', {
-            get: () => $captureError,
-        })
+        this.#vm.$captureError = (e, instance, type) => {
+            if(this.emit_hook('errorCaptured', e, instance, type))
+                return true
+
+            if(global_config.config.errorHandler) {
+                global_config.config.errorHandler(e, instance, type)
+                return true
+            }
+        }
 
         // init hooks
         this.on_hook('beforeCreate', options.beforeCreate, true)
@@ -147,6 +152,7 @@ class VueReactComponent extends Component {
         this.on_hook('deactivated', options.deactivated, true)
 
         // init component options
+        attach(global_config.config.globalProperties, this.#vm)
         setup(this, this.#vm, this.#helpers, props, expose) // enable vue featurus on this component
 
         if(!this.#helpers.render)

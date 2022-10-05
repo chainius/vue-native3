@@ -54,7 +54,7 @@
         width: 100%;
         justify-content: center;
         align-items: center;
-        backgroundColor: green;
+        background-color: green;
     }
 
 </style>

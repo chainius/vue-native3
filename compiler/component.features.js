@@ -308,7 +308,7 @@ export default function setup(options, render) {
 }
 
 // attach data
-function attach(data, target, readonly = false) {
+export function attach(data, target, readonly = false) {
     for(var key in data) {
         if(key.startsWith('$') || key.startsWith('_'))
             continue

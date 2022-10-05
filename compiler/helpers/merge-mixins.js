@@ -91,6 +91,7 @@ function mergeOptions(to, from, strats, asMixin = false) {
             to[key] = strat ? strat(to[key], from[key]) : from[key]
         }
     }
+
     return to
 }
 

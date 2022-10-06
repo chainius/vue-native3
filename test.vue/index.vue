@@ -1,12 +1,13 @@
 <template>
     <view class="text text2">
+        <text>normal component</text>
         <!-- <button title="change" @press="item++" />
 
         <text style="color: #fff">test level {{ item % 2 }}</text> -->
 
-        <suspense @pending="onPending" @fallback="onFallback" @resolve="onResolve" timeout="1000">
+        <suspense @pending="onPending" @fallback="onFallback" @resolve="onResolve">
             <lvl1 key="lvl1" class="text"><text>test.vue {{ i }} {{ color }}</text></lvl1>
-            <text>normal component</text>
+            <text>inner suspensed text</text>
 
             <template #fallback>
                <text>Loading...</text>

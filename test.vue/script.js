@@ -60,10 +60,11 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
 
 
 
-import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, Suspense as _Suspense, openBlock as _openBlock, createBlock as _createBlock } from "vue"
+import { createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, toDisplayString as _toDisplayString, Suspense as _Suspense, openBlock as _openBlock, createBlock as _createBlock } from "vue"
 
 const _hoisted_1 = /*#__PURE__*/_createTextVNode("normal component")
-const _hoisted_2 = /*#__PURE__*/_createTextVNode("Loading...")
+const _hoisted_2 = /*#__PURE__*/_createTextVNode("inner suspensed text")
+const _hoisted_3 = /*#__PURE__*/_createTextVNode("Loading...")
 
 function __TEMPLATE_RENDER__(_ctx, _cache) {
   const _component_text = _resolveComponent("text")
@@ -72,16 +73,21 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
 
   return (_openBlock(), _createBlock(_component_view, { class: "text text2" }, {
     default: _withCtx(() => [
+      _createVNode(_component_text, null, {
+        default: _withCtx(() => [
+          _hoisted_1
+        ]),
+        _: 1 /* STABLE */
+      }),
       (_openBlock(), _createBlock(_Suspense, {
         onPending: _ctx.onPending,
         onFallback: _ctx.onFallback,
-        onResolve: _ctx.onResolve,
-        timeout: "1000"
+        onResolve: _ctx.onResolve
       }, {
         fallback: _withCtx(() => [
           _createVNode(_component_text, null, {
             default: _withCtx(() => [
-              _hoisted_2
+              _hoisted_3
             ]),
             _: 1 /* STABLE */
           })
@@ -103,7 +109,7 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
           }),
           _createVNode(_component_text, null, {
             default: _withCtx(() => [
-              _hoisted_1
+              _hoisted_2
             ]),
             _: 1 /* STABLE */
           })

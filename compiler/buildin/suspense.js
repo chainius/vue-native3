@@ -34,10 +34,6 @@ export class Suspense extends React.PureComponent {
         return children
     }
 
-    async load(child, i) {
-        return await child.type._init(child.type._payload)
-    }
-
     componentWillUnmount() {
         clearTimeout(this.#fallbackTimeout)
     }
@@ -46,6 +42,7 @@ export class Suspense extends React.PureComponent {
         const children = this.children
         var resolved = true
         var loaderStarted = false
+        const parent = this.props.$parent
 
         // resolves react async dependencies
         for(var i in children) {
@@ -58,19 +55,31 @@ export class Suspense extends React.PureComponent {
                 continue
             }
 
-            resolved = false
-            this.state.has_pending_deps = true
-
             if(child.type._payload?._status == -1) {
-                loaderStarted = true
+                try {
+                    var R = child.type._init(child.type._payload, true)
 
-                this.load(child, i).catch((e) => {
-                    return e
-                }).catch((e) => {
-                    handleError(e, this.props.$parent, 'Suspense')
-                }).then(() => {
-                    this.setState({ has_pending_deps: false })
-                })
+                    if(typeof(R) == 'function')
+                        children[i] = <R {...child.props} />
+                    else
+                        children[i] = null
+                } catch(e) {
+                    if(!e?.then) {
+                        handleError(e, this.props.$parent, 'Suspense')
+                        continue
+                    }
+
+                    resolved = false
+                    this.state.has_pending_deps = true
+                    loaderStarted = true
+
+                    e.catch((e) => {
+                        handleError(e, this.props.$parent, 'Suspense')
+                    }).then(() => {
+                        this.setState({ has_pending_deps: false })
+                    })
+                }
+
             }
         }
 
@@ -122,10 +131,6 @@ export function defineAsyncComponent(options) {
     if(options.delay === undefined)
         options.delay = 200
 
-    // delay?: number // TODO
-    // timeout?: number // TODO
-    // suspensible?: boolean
-
     var setters = {}
     var id = 0
     var attempts = 1
@@ -135,9 +140,10 @@ export function defineAsyncComponent(options) {
         _status: -1,
     }
 
-    function start_loader() {
+    function start_loader(onDone, $parent) {
         payload._status = 0
 
+        // start async process
         options.loader().then(r => {
             payload._result = r.default
             payload._status = 1
@@ -151,20 +157,20 @@ export function defineAsyncComponent(options) {
 
                 if(retry) {
                     attempts++
-                    setImmediate(start_loader)
+                    setImmediate(start_loader.bind(this, onDone, $parent))
                     throw('retry')
                 }
             } else {
-                // TODO uses vue handler
+                handleError(err, $parent, 'AsyncComponent')
             }
 
+            onDone()
             payload._result = () => null
             payload._status = 2
 
-            return {
-                component: options.errorComponent ? <options.errorComponent /> : null,
-            }
+            return options.errorComponent ? <options.errorComponent /> : null
         }).then((res) => {
+            onDone()
             var n = setters
             setters = null
 
@@ -175,8 +181,18 @@ export function defineAsyncComponent(options) {
             if(e == 'retry')
                 return
 
-            console.error(e) // TODO uses vue handler
+            onDone()
+            handleError(e, $parent, 'AsyncComponent')
         })
+    }
+
+    function _fallback(Fallback) {
+        if(setters === null)
+            return
+
+        for(var i in setters) {
+            setters[i](<Fallback />)
+        }
     }
 
     // create render function that will handle states till async component is loaded
@@ -192,7 +208,16 @@ export function defineAsyncComponent(options) {
                 return
 
             var id = data.id
-            setters[id] = setData
+            setters[id] = (v) => {
+                if(v === null)
+                    return setData(null)
+
+                setData({
+                    id:         data.id,
+                    component:  v,
+                })
+            }
+
             return () => {
                 if(setters !== null) {
                     delete setters[id]
@@ -206,7 +231,23 @@ export function defineAsyncComponent(options) {
         }
 
         if(payload._status == -1) {
-            start_loader()
+            var delay = null
+            var timeout = null
+
+            // support delay
+            if(options.delay > 0 && options.loadingComponent) {
+                delay = setTimeout(_fallback.bind(this, options.loadingComponent), options.delay)
+            }
+
+            // support timeout
+            if(options.timeout > 0 && options.errorComponent) {
+                timeout = setTimeout(_fallback.bind(this, options.errorComponent), options.timeout)
+            }
+
+            start_loader(function() {
+                clearTimeout(delay)
+                clearTimeout(timeout)
+            }, props.$parent)
         }
 
         return data.component
@@ -216,8 +257,21 @@ export function defineAsyncComponent(options) {
     return {
         $$typeof: Symbol.for('react.lazy'),
         _init: function(payload, suspense = false) {
-            if(payload._status < 1 && options.suspensible !== false && suspense)
-                return options.loader
+            if(payload._status < 1 && options.suspensible !== false && suspense) {
+                payload._status = 0
+
+                const r = options.loader().then((v) => {
+                    payload._result = v
+                    payload._status = 1
+                    return v
+                }).catch((e) => {
+                    payload._result = () => null
+                    payload._status = 2
+                    return null
+                })
+
+                throw(r)
+            }
 
             return payload._result
         },

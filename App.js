@@ -2,11 +2,11 @@ import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
 import Test from './test.vue/index.vue'
 import Lvl2 from './lvl2.vue/index.vue'
-import { createApp, defineAsyncComponent } from 'vue'
+import { createApp, defineAsyncComponent, Suspense as VueSuspense } from 'vue'
 
-// import Lvl1 from './lvl1.vue/index.vue'
+import Lvl1 from './lvl1.vue/index.vue'
 
-const App =  createApp(Lvl2)
+// const App =  createApp(Lvl2)
 // App.component('Lvl1', Lvl1)
 
 
@@ -23,7 +23,7 @@ const App =  createApp(Lvl2)
 //     },
 //     timeout: 2000,
 //     delay: 0,
-//     suspensible: false,
+//     // suspensible: false,
 //     loadingComponent: loading,
 //     errorComponent: onerror,
 // })
@@ -33,9 +33,21 @@ const App =  createApp(Lvl2)
 // export default App
 
 export default function() {
-    return <Suspense fallback={loading()}>
-        <App />
-    </Suspense>
+    [count, setCount] = useState(0)
+
+    setTimeout(() => {
+        setCount(count + 1)
+    }, 1000)
+
+    return (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>{count}</Text>
+            <VueSuspense fallback={loading()}>
+            
+                <Lvl2 myprop={1} />
+                {/* { count % 2 == 0 ? <Text>innter</Text> : null } */}
+            </VueSuspense>
+        </View>
+    )
 }
 
 // import { View, Text } from 'react-native'

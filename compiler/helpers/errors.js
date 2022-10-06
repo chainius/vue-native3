@@ -1,5 +1,5 @@
 export function handleError(err, instance, type, throwInDev = true) {
-    const cb = instance.$captureError
+    const cb = instance?.$captureError
     if(cb && cb(err, instance, type)) {
         return
     }

@@ -1,5 +1,5 @@
 <template>
-    <touchable @press="increment" style="backgroundColor: red; flex: 1; justifyContent: center; alignItems: center">
+    <touchable @press="increment" style="backgroundColor: red; flex: 1; width: 100%; justifyContent: center; alignItems: center">
         <text class="title">{{state.count}} second</text>
     </touchable>
 </template>
@@ -13,6 +13,7 @@
 
     const tm = new Promise((resolve) => setTimeout(resolve, 1000))
     await tm
+
     console.log('timeout reached')
 
     const state = withHooks(() => {
@@ -34,6 +35,16 @@
 
     export default {
         name: 'lvl2',
+        // async: true,
+        beforeCreate() {
+            console.log('before create')
+        },
+        created() {
+            console.log('created')
+        },
+        mounted() {
+            console.log('mounted')
+        },
         props: {
             title: {
                 type: String,

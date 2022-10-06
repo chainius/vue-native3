@@ -3,6 +3,7 @@ import { handleError } from '../helpers/errors'
 
 export class Suspense extends React.PureComponent {
     #fallbackTimeout = null
+    #renderers = {}
 
     state = {
         show_fallback: true,
@@ -42,27 +43,39 @@ export class Suspense extends React.PureComponent {
         const children = this.children
         var resolved = true
         var loaderStarted = false
-        const parent = this.props.$parent
+        var showing = []
 
         // resolves react async dependencies
         for(var i in children) {
             var child = children[i]
-            if(!child.type || !child.type._init || child.type.render || !child.type._payload)
-                continue
+            if(this.#renderers[i]) {
+                try {
+                    showing[i] = this.#renderers[i](child.props)
+                } catch(e) {
+                    handleError(e, this.props.$parent, 'Suspense')
+                }
 
-            if(child.type._payload?._status == 1) {
-                children[i] = child.type._payload._result.default && child.type._payload._result.default(child.props) || null
                 continue
             }
 
-            if(child.type._payload?._status == -1) {
+            if(!child || !child.type || !child.type._init || !child.type._payload) {
+                showing[i] = child
+                continue
+            }
+
+            showing[i] = null
+
+            // child should only init once
+            if(!this.#renderers[i]) {
+                this.#renderers[i] = () => null
+
                 try {
-                    var R = child.type._init(child.type._payload, true)
+                    var R = child.type._init(child.type._payload, true, child.props)
 
                     if(typeof(R) == 'function')
-                        children[i] = <R {...child.props} />
+                        this.#renderers[i] = (props) => <R {...props} />
                     else
-                        children[i] = null
+                        this.#renderers[i] = () => null
                 } catch(e) {
                     if(!e?.then) {
                         handleError(e, this.props.$parent, 'Suspense')
@@ -73,13 +86,21 @@ export class Suspense extends React.PureComponent {
                     this.state.has_pending_deps = true
                     loaderStarted = true
 
-                    e.catch((e) => {
-                        handleError(e, this.props.$parent, 'Suspense')
-                    }).then(() => {
+                    var index = i
+
+                    e.then((r) => {
+                        this.#renderers[index] = r?.default || r
                         this.setState({ has_pending_deps: false })
+                    }).catch((e) => {
+                        handleError(e, this.props.$parent, 'Suspense')
                     })
                 }
+            }
 
+            try {
+                showing[i] = this.#renderers[i](child.props)
+            } catch(e) {
+                handleError(e, this.props.$parent, 'Suspense')
             }
         }
 
@@ -92,7 +113,7 @@ export class Suspense extends React.PureComponent {
                 this.state.resolve_emiited = true
             }
 
-            return React.createElement(React.Fragment, {}, ...children)
+            return React.createElement(React.Fragment, {}, ...showing)
         }
 
         // show fallback

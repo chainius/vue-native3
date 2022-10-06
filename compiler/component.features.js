@@ -173,11 +173,21 @@ export function withStylesheet(options) {
 
 export function withSetup(options) {
     if(!options.setup) {
-        return
+        return () => {}
     }
 
     // call script setup function
     return function(vm, helpers, props, expose) {
+        const finaliser = (setup_result) => {
+            if(typeof(setup_result) == 'function') {
+                helpers.render = setup_result.bind(vm)
+            } else if(typeof(setup_result) == 'object') {
+                for(var key in setup_result) {
+                    vm[key] = setup_result[key]
+                }
+            }
+        }
+
         try {
             const setup_result = options.setup(vm.$props, {
                 expose: expose,
@@ -186,13 +196,10 @@ export function withSetup(options) {
                 attrs:  vm.$attrs,
             })
 
-            if(typeof(setup_result) == 'function') {
-                helpers.render = setup_result.bind(vm)
-            } else if(typeof(setup_result) == 'object') {
-                for(var key in setup_result) {
-                    vm[key] = setup_result[key]
-                }
-            }
+            if(setup_result && setup_result.then)
+                return setup_result.then(finaliser)
+
+            finaliser(setup_result)
         } catch(e) {
             handleError(e, vm, 'setup')
         }
@@ -276,22 +283,24 @@ export function createChain(options, render) {
         }
     }
 
-    return function(instance, vm, helpers, props, expose) {
+    return function(embeded, props, expose) {
         for(var e of fns) {
-            e.call(instance, vm, helpers, props, expose)
+            e.call(embeded, embeded.vm, embeded.helpers, props, expose)
         }
     }
 }
 
 export default function setup(options, render) {
     // 16 directives
-    return createChain(
+    const pre = createChain(
         options,
         render,
         __DEV__ && withRenderOptions,
         withEmits,
         withProps,
-        withSetup,
+    )
+
+    const post = createChain(
         withRender,
         withMethods,
         withDirectives,
@@ -305,6 +314,12 @@ export default function setup(options, render) {
         withEmit('created'),
         withWatch,
     )
+
+    return [
+        pre,
+        withSetup(options),
+        post,
+    ]
 }
 
 // attach data

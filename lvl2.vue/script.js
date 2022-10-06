@@ -18,6 +18,16 @@ import { unref as _unref, toDisplayString as _toDisplayString, createTextVNode a
 
     const __default__ = {
         name: 'lvl2',
+        // async: true,
+        beforeCreate() {
+            console.log('before create')
+        },
+        created() {
+            console.log('created')
+        },
+        mounted() {
+            console.log('mounted')
+        },
         props: {
             title: {
                 type: String,
@@ -47,7 +57,7 @@ import { withHooks } from 'vue'
     import { useState } from 'react';
 
     
-const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
+export default /*#__PURE__*/Object.assign(__default__, {
   async setup(__props) {
 
 let __temp, __restore
@@ -61,6 +71,7 @@ let __temp, __restore
   await __temp,
   __restore()
 )
+
     console.log('timeout reached')
 
     const state = withHooks(() => {
@@ -83,7 +94,7 @@ return (_ctx, _cache) => {
 
   return (_openBlock(), _createBlock(_component_touchable, {
     onPress: _ctx.increment,
-    style: {"backgroundColor":"red","flex":"1","justifyContent":"center","alignItems":"center"}
+    style: {"backgroundColor":"red","flex":"1","width":"100%","justifyContent":"center","alignItems":"center"}
   }, {
     default: _withCtx(() => [
       _createVNode(_component_text, { class: "title" }, {
@@ -99,6 +110,3 @@ return (_ctx, _cache) => {
 }
 
 })
-
-__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__
-export default __DEFAULT_WITH_TEMPLATE__

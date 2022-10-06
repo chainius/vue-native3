@@ -60,8 +60,6 @@ let __temp, __restore
 
     console.log('next tick reached')
 
-    const r = 'test'
-
 
 return (_ctx, _cache) => {
   const _component_text = _resolveComponent("text")

@@ -11,6 +11,7 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
   }
 })
 
+import { withAsyncContext as _withAsyncContext } from 'vue'
 import { unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, openBlock as _openBlock, createBlock as _createBlock } from "vue"
 
 
@@ -47,10 +48,20 @@ import { withHooks } from 'vue'
 
     
 const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
-  setup(__props) {
+  async setup(__props) {
+
+let __temp, __restore
 
 
     var lastTimeout = null
+
+    const tm = new Promise((resolve) => setTimeout(resolve, 1000))
+    ;(
+  ([__temp,__restore] = _withAsyncContext(() => tm)),
+  await __temp,
+  __restore()
+)
+    console.log('timeout reached')
 
     const state = withHooks(() => {
         const [ count, setCount ] = useState(0);
@@ -72,7 +83,7 @@ return (_ctx, _cache) => {
 
   return (_openBlock(), _createBlock(_component_touchable, {
     onPress: _ctx.increment,
-    style: {"backgroundColor":"red"}
+    style: {"backgroundColor":"red","flex":"1","justifyContent":"center","alignItems":"center"}
   }, {
     default: _withCtx(() => [
       _createVNode(_component_text, { class: "title" }, {

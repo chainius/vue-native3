@@ -6,7 +6,7 @@ import { createApp, defineAsyncComponent } from 'vue'
 
 // import Lvl1 from './lvl1.vue/index.vue'
 
-const App =  createApp(Test)
+const App =  createApp(Lvl2)
 // App.component('Lvl1', Lvl1)
 
 
@@ -15,22 +15,28 @@ const App =  createApp(Test)
 //     return import('./comp1.js')
 // });
 
-const Lvl1 = defineAsyncComponent({
-    loader: async function() {
-        await waitTimeout(500)
-        console.log('returning')
-        return import('./comp1.js')
-    },
-    timeout: 2000,
-    delay: 0,
-    suspensible: false,
-    loadingComponent: loading,
-    errorComponent: onerror,
-})
+// const Lvl1 = defineAsyncComponent({
+//     loader: async function() {
+//         await waitTimeout(500)
+//         console.log('returning')
+//         return import('./comp1.js')
+//     },
+//     timeout: 2000,
+//     delay: 0,
+//     suspensible: false,
+//     loadingComponent: loading,
+//     errorComponent: onerror,
+// })
 
-App.component('Lvl1', Lvl1)
+// App.component('Lvl1', Lvl1)
 
-export default App
+// export default App
+
+export default function() {
+    return <Suspense fallback={loading()}>
+        <App />
+    </Suspense>
+}
 
 // import { View, Text } from 'react-native'
 // import { Suspense } from 'vue'
@@ -75,11 +81,11 @@ function onerror() {
 //     // </View>)
 // }
 
-// // export default function() {
-// //     return <Suspense fallback={loading()}>
-// //         <Comp1 />
-// //     </Suspense>
-// // }
+// export default function() {
+//     return <Suspense fallback={loading()}>
+//         <Comp1 />
+//     </Suspense>
+// }
 
 function waitTimeout(timeout) {
     return new Promise(resolve => {

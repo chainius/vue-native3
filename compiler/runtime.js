@@ -343,9 +343,12 @@ export function withHooks(renderer) {
     return enableHooks(currentRenderingInstance, renderer)
 }
 
+export function Comment() {
+    return null
+}
+
 // TODO: exported from vue:
 // exports.BaseTransition = BaseTransition;
-// exports.Comment = Comment;
 // exports.Static = Static;
 // exports.Teleport = Teleport;
 

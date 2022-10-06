@@ -1,5 +1,5 @@
 <template>
-    <touchable @press="increment" style="backgroundColor: red">
+    <touchable @press="increment" style="backgroundColor: red; flex: 1; justifyContent: center; alignItems: center">
         <text class="title">{{state.count}} second</text>
     </touchable>
 </template>
@@ -10,6 +10,10 @@
     import { useState } from 'react';
 
     var lastTimeout = null
+
+    const tm = new Promise((resolve) => setTimeout(resolve, 1000))
+    await tm
+    console.log('timeout reached')
 
     const state = withHooks(() => {
         const [ count, setCount ] = useState(0);

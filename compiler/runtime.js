@@ -181,6 +181,7 @@ export function createTextVNode(txt) {
 // ----
 
 import { KeepAlive, Suspense } from './buildin'
+export { Text } from 'react-native'
 
 const components = {
     view:          View,
@@ -333,12 +334,20 @@ export function withAsyncContext(ctx) {
     return [ctx(), () => currentRenderingInstance = current]
 }
 
+import { enableHooks } from './react-hooks'
+
+export function withHooks(renderer) {
+    if(!currentRenderingInstance)
+        return console.warn("withHooks called outside of component render function")
+
+    return enableHooks(currentRenderingInstance, renderer)
+}
+
 // TODO: exported from vue:
 // exports.BaseTransition = BaseTransition;
 // exports.Comment = Comment;
 // exports.Static = Static;
 // exports.Teleport = Teleport;
-// exports.Text = Text;
 
 // exports.callWithAsyncErrorHandling = callWithAsyncErrorHandling;
 // exports.callWithErrorHandling = callWithErrorHandling;

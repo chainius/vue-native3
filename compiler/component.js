@@ -209,6 +209,10 @@ class VueReactComponent extends Component {
         this.emit_hook('updated')
     }
 
+    componentDidCatch(error, errorInfo) {
+        this.#vm.$captureError(error, this.#vm, errorInfo)
+    }
+
     shouldComponentUpdate(props) {
         if(props != this.props) {
             delete this.#helpers.attrs

@@ -1,9 +1,27 @@
 <template>
     <touchable @press="increment" style="backgroundColor: red">
-        <text class="title">{{title}} second</text>
-        <text class="value">{{ i }}</text>
+        <text class="title">{{state.count}} second</text>
     </touchable>
 </template>
+
+<script setup>
+
+    import { withHooks } from 'vue'
+    import { useState } from 'react';
+
+    const state = withHooks(() => {
+        const [ count, setCount ] = useState(0);
+
+        setTimeout(() => {
+            setCount(count + 1);
+        }, 1000);
+
+        return {
+            count
+        }
+    })
+
+</script>
 
 <script>
 

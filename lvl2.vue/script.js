@@ -11,9 +11,11 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
   }
 })
 
+import { unref as _unref, toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, openBlock as _openBlock, createBlock as _createBlock } from "vue"
 
 
-    const __DEFAULT_WITH_TEMPLATE__ = {
+
+    const __default__ = {
         name: 'lvl2',
         props: {
             title: {
@@ -40,10 +42,28 @@ const __VUE_STYLESHEET__ = __REACT_STYLESHEET__.create({
     }
 
 
+import { withHooks } from 'vue'
+    import { useState } from 'react';
 
-import { toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx, createVNode as _createVNode, openBlock as _openBlock, createBlock as _createBlock } from "vue"
+    
+const __DEFAULT_WITH_TEMPLATE__ = /*#__PURE__*/Object.assign(__default__, {
+  setup(__props) {
 
-function __TEMPLATE_RENDER__(_ctx, _cache) {
+
+    const state = withHooks(() => {
+        const [ count, setCount ] = useState(0);
+
+        setTimeout(() => {
+            setCount(count + 1);
+        }, 1000);
+
+        return {
+            count
+        }
+    })
+
+
+return (_ctx, _cache) => {
   const _component_text = _resolveComponent("text")
   const _component_touchable = _resolveComponent("touchable")
 
@@ -54,13 +74,7 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
     default: _withCtx(() => [
       _createVNode(_component_text, { class: "title" }, {
         default: _withCtx(() => [
-          _createTextVNode(_toDisplayString(_ctx.title) + " second", 1 /* TEXT */)
-        ]),
-        _: 1 /* STABLE */
-      }),
-      _createVNode(_component_text, { class: "value" }, {
-        default: _withCtx(() => [
-          _createTextVNode(_toDisplayString(_ctx.i), 1 /* TEXT */)
+          _createTextVNode(_toDisplayString(_unref(state).count) + " second", 1 /* TEXT */)
         ]),
         _: 1 /* STABLE */
       })
@@ -68,5 +82,9 @@ function __TEMPLATE_RENDER__(_ctx, _cache) {
     _: 1 /* STABLE */
   }, 8 /* PROPS */, ["onPress"]))
 }
+}
 
-export default Object.assign({ render: __TEMPLATE_RENDER__, __name: "index", stylesheet: __VUE_STYLESHEET__ }, __DEFAULT_WITH_TEMPLATE__)
+})
+
+__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__
+export default __DEFAULT_WITH_TEMPLATE__

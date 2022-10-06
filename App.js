@@ -1,7 +1,10 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
 import Test from './test.vue/index.vue'
+import Lvl2 from './lvl2.vue/index.vue'
 import { createApp, defineAsyncComponent } from 'vue'
+
+import useDeviceOrientation from '@rnhooks/device-orientation';
 // import Lvl1 from './lvl1.vue/index.vue'
 
 // const App =  createApp(Test)
@@ -60,12 +63,16 @@ function Testview() {
 // console.log('test', Comp1)
 
 export default function() {
-    return (<View style={{ flex: 1 }}>
-        <Comp1 />
-        <Suspense  fallback={loading()}>
-            <Comp1 />
-        </Suspense>
-    </View>)
+    // const deviceOrientation = useDeviceOrientation();
+    // console.log('upper', deviceOrientation)
+
+    return <Lvl2 style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+    // return (<View style={{ flex: 1 }}>
+    //     <Comp1 />
+    //     <Suspense  fallback={loading()}>
+    //         <Comp1 />
+    //     </Suspense>
+    // </View>)
 }
 
 // export default function() {

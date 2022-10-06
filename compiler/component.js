@@ -36,6 +36,8 @@ class VueReactComponent extends Component {
 
     #global_config = {}
 
+    #stop_effect = () => null
+
     #helpers = {
         watch_render_options: {},
         emit_validators: {},
@@ -237,7 +239,9 @@ class VueReactComponent extends Component {
         var rendering = true
 
         try {
-            watchEffect(() => {
+            this.#stop_effect()
+
+            this.#stop_effect = watchEffect(() => {
                 if(rendering === true) {
                     rendering = this.#helpers.render(this.#vm, this.#cache)
                     return

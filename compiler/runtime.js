@@ -334,7 +334,7 @@ export function withAsyncContext(ctx) {
     return [ctx(), () => currentRenderingInstance = current]
 }
 
-import { enableHooks } from './react-hooks'
+import { enableHooks } from './helpers/react-hooks'
 
 export function withHooks(renderer) {
     if(!currentRenderingInstance)

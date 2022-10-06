@@ -9,15 +9,18 @@
     import { withHooks } from 'vue'
     import { useState } from 'react';
 
+    var lastTimeout = null
+
     const state = withHooks(() => {
         const [ count, setCount ] = useState(0);
 
-        setTimeout(() => {
+        clearTimeout(lastTimeout)
+        lastTimeout = setTimeout(() => {
             setCount(count + 1);
-        }, 1000);
+        }, 10);
 
         return {
-            count
+            count: 1000 + count,
         }
     })
 

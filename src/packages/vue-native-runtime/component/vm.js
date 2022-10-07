@@ -6,7 +6,7 @@ import { CompositionContext } from '../app.js'
 import $watch from '../helpers/watcher'
 import { attach } from './features.js'
 
-class VM {
+export default class VM {
 
     helpers = {
         watch_render_options:  {},
@@ -286,7 +286,11 @@ class VM {
                     Object.assign(this.#provided_with_ctx, this.#provided)
                 }
 
-                return (<CompositionContext.Provider value={this.#provided_with_ctx}>{render(vm, cache)}</CompositionContext.Provider>)
+                return React.createElement(
+                    CompositionContext.Provider,
+                    { value: this.#provided_with_ctx },
+                    render(vm, cache),
+                )
             }
         }
 
@@ -419,8 +423,6 @@ class VM {
         return rendering
     }
 }
-
-module.exports = VM
 
 var setCurrentInstance = () => {}
 var getCurrentInstance = () => {}

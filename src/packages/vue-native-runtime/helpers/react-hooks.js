@@ -1,3 +1,5 @@
+import React from "react"
+
 export function enableHooks(instance, hooks) {
     const render = instance.render.bind(instance)
     var state = {}
@@ -9,7 +11,7 @@ export function enableHooks(instance, hooks) {
     }
 
     instance.render = function() {
-        return <Hooks {...this.props} />
+        return React.createElement(Hooks, this.props)
     }
 
     return state

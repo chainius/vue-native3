@@ -127,7 +127,7 @@ export function defineComponent(app) {
                     const VueComponent = generateComponent(() => vm)
 
                     return function sync_render(props) {
-                        return <VueComponent {...props} />
+                        return React.createElement(VueComponent, props, props.children || null)
                     }
                 })())
             },

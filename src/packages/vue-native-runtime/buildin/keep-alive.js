@@ -114,7 +114,7 @@ export class KeepAlive extends React.PureComponent {
                 style.display = 'none'
             }
          
-            childs.push(<View key={i} style={style}>{ this.#instances[i] }</View>)
+            childs.push(React.createElement(View, { key: i, style }, this.#instances[i]))
         }
 
         return childs

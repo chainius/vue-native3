@@ -1,0 +1,15 @@
+{
+  "name": "@chainius/vue-native-compiler",
+  "version": "0.1.0",
+  "description": "vue native compiler",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sacha Vandamme <sacha@skyhark.be> (https://www.core-server.io/)",
+  "license": "ISC",
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.2.40",
+    "css-to-react-native-transform": "^2.0.0"
+  }
+}

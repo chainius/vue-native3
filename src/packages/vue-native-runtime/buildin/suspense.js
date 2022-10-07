@@ -74,7 +74,7 @@ export class Suspense extends React.PureComponent {
                     var R = child.type._init(child.type._payload, true, child.props)
 
                     if(typeof(R) == 'function')
-                        this.#renderers[i] = (props) => <R {...props} />
+                        this.#renderers[i] = (props) => React.createElement(R, props, props.children || null)
                     else
                         this.#renderers[i] = () => null
                 } catch(e) {
@@ -190,7 +190,7 @@ export function defineAsyncComponent(options) {
             payload._result = () => null
             payload._status = 2
 
-            return options.errorComponent ? <options.errorComponent /> : null
+            return options.errorComponent ? React.createElement(options.errorComponent) : null
         }).then((res) => {
             onDone()
             var n = setters
@@ -213,7 +213,7 @@ export function defineAsyncComponent(options) {
             return
 
         for(var i in setters) {
-            setters[i](<Fallback />)
+            setters[i](React.createElement(Fallback))
         }
     }
 
@@ -221,7 +221,7 @@ export function defineAsyncComponent(options) {
     payload._result = function render(props) {
         const [data, setData] = useState({
             id:        id++,
-            component: options.loadingComponent && options.delay <= 0 ? <options.loadingComponent /> : null,
+            component: options.loadingComponent && options.delay <= 0 ? React.createElement(options.loadingComponent) : null,
         })
 
         // add changes listener

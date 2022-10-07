@@ -100,7 +100,7 @@ function mergeOptions(to, from, strats, asMixin = false) {
  * This is done only once per-component since the merging does not involve
  * instances.
  */
-module.exports = function resolveOptions(instance, strats = {}) {
+export default function resolveOptions(instance, strats = {}) {
     if(!instance.mixins)
         return instance
 

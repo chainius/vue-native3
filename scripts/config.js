@@ -13,28 +13,16 @@ const builds = {
         format:   'cjs',
         external: ['react', 'react-native', '@vue/shared'],
     },
-    'vue-native-compiler': {
+    'vue-native-babel': {
         entry:  resolve('src/packages/vue-native-compiler/transform.js'),
         dest:   resolve('packages/vue-native-compiler/build.js'),
         format: 'cjs',
     },
-    // 'vue-native-scripts': {
-    //     entry:    resolve('vue-native/scripts/index.js'),
-    //     dest:     resolve('packages/vue-native-scripts/build.js'),
-    //     format:   'cjs',
-    //     external: []
-    //         .concat(
-    //             Object.keys(
-    //                 require('../packages/vue-native-scripts/package.json').dependencies,
-    //             ),
-    //         )
-    //         .concat(
-    //             Object.keys(
-    //                 require('../packages/vue-native-scripts/package.json')
-    //                     .peerDependencies,
-    //             ),
-    //         ),
-    // },
+    'vue-native-compiler': {
+        entry:  resolve('src/packages/vue-native-compiler/main.js'),
+        dest:   resolve('packages/vue-native-compiler/main.js'),
+        format: 'cjs',
+    },
 }
 
 function genConfig(opts) {

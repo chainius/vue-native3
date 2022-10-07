@@ -1,8 +1,8 @@
 const { getDefaultConfig } = require('@expo/metro-config')
-var config = getDefaultConfig(__dirname)
+const { merge } = require('./packages/vue-native-compiler/main.js')
 
-config.resolver.sourceExts = ['js', 'json', 'ts', 'tsx', 'vue']
-config.transformer.babelTransformerPath = require.resolve("@chainius/vue-native-compiler")
+var config = getDefaultConfig(__dirname)
+config = merge(config)
 
 config.transformer.vue = {
     // saveJS: true,

@@ -1,8 +1,8 @@
 {
-  "name": "@chainius/vue-native-compiler",
+  "name": "@vue-native3/compiler",
   "version": "0.0.1",
   "description": "vue native compiler",
-  "main": "build.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

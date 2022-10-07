@@ -1,5 +1,5 @@
 {
-  "name": "@chainius/vue-native-runtime",
+  "name": "@vue-native3/runtime",
   "version": "0.0.1",
   "description": "runtime to bridge vue components to react native",
   "main": "index.js",

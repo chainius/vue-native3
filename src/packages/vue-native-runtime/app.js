@@ -1,5 +1,5 @@
 import React from 'react'
-import { version, camelize, capitalize, hyphenate } from './runtime-bridge.js'
+import { version, camelize, capitalize, hyphenate } from './vue-bridge.js'
 
 export const CompositionContext = React.createContext({})
 CompositionContext.displayName = 'VueContext'

@@ -1,7 +1,7 @@
 import React, { Component } from "react"
-import { attachApp, GlobalContext, CompositionContext } from './app.js'
-import merge from './helpers/merge-mixins'
-import setup_constructor from './component.features.js'
+import { attachApp, GlobalContext, CompositionContext } from '../app.js'
+import merge from '../helpers/merge-mixins'
+import setup_constructor from './features.js'
 import VM from './vm.js'
 
 var setCurrentInstance = () => {}

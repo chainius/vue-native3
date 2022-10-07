@@ -9,7 +9,7 @@ module.exports = function (api) {
                 {
                     root:  ['./'],
                     alias: {
-                        vue: './compiler/runtime.js',
+                        vue: './packages/vue-native-runtime/index.js',
                     },
                     extensions: [
                         '.ios.js',
@@ -20,6 +20,7 @@ module.exports = function (api) {
                         '.tsx',
                         '.ts',
                         '.native.js',
+                        '.vue',
                     ],
                 },
             ],

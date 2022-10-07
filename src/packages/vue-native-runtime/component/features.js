@@ -1,6 +1,6 @@
-import { handleError } from './helpers/errors'
-import { watchEffect, camelize, ref, computed } from './runtime-bridge.js'
-import init_props from './helpers/props'
+import { watchEffect, camelize, ref, computed } from '../vue-bridge.js'
+import { handleError } from '../helpers/errors'
+import init_props from '../helpers/props'
 
 // enable renderTriggered & renderTracked features
 export function withRenderOptions(options) {

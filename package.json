@@ -1,28 +1,49 @@
 {
-  "name": "my-app",
-  "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
-  },
-  "dependencies": {
-    "@rnhooks/device-orientation": "^0.0.2",
-    "@vue/compiler-sfc": "^3.2.39",
-    "@vue/runtime-core": "^3.2.39",
-    "@vue/runtime-dom": "^3.2.39",
-    "babel-plugin-module-resolver": "^4.1.0",
-    "css-to-react-native-transform": "^2.0.0",
-    "expo": "~46.0.9",
-    "expo-status-bar": "~1.4.0",
-    "react": "18.0.0",
-    "react-async": "^10.0.1",
-    "react-native": "0.69.6"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.12.9"
-  },
-  "private": true
+    "name": "vue-native-core",
+    "version": "0.3.1",
+    "description": "Create mobile apps using vuejs",
+    "main": "packages/vue-native-core/index.js",
+    "typings": "types/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GeekyAnts/vue-native-core.git"
+    },
+    "keywords": [
+        "vue",
+        "native",
+        "mobile"
+    ],
+    "engines": {
+        "node": "^4.5 || >=5.10"
+    },
+    "engineStrict": true,
+    "author": "Chainius (https://www.bit4you.io)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/chainius/vue-native3/issues"
+    },
+    "files": [
+        "src",
+        "packages",
+        "types/*.d.ts"
+    ],
+    "scripts": {
+        "lint": "eslint src",
+        "lint:fix": "eslint --fix src",
+        "build": "node scripts/build.js",
+        "release": "bash scripts/release.sh"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run lint:fix"
+        }
+    },
+    "homepage": "https://github.com/chainius/vue-native3",
+    "dependencies": {
+        "eslint": "^8.24.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-flowtype": "^8.0.3",
+        "eslint-plugin-prettier": "^4.2.1",
+        "prettier": "^2.7.1"
+    }
 }

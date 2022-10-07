@@ -3,7 +3,7 @@ const CompilerDOM = require('@vue/compiler-dom')
 const transform_css = require('css-to-react-native-transform')
 const fs = require('fs')
 const path = require('path')
-var upstreamTransformer = require("metro-react-native-babel-transformer")
+const upstreamTransformer = require("metro-react-native-babel-transformer")
 
 // wrapper arround SFC parser to support native & web attributes to filter templates/styles/scripts/...
 function parse(data, options) {

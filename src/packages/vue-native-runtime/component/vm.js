@@ -1,10 +1,10 @@
 import React from "react"
 import { StyleSheet } from 'react-native'
-import { watchEffect, version, nextTick, camelize, capitalize, hyphenate } from './runtime-bridge.js'
-import { handleError } from './helpers/errors'
-import { CompositionContext } from './app.js'
-import $watch from './helpers/watcher'
-import { attach } from './component.features.js'
+import { watchEffect, version, nextTick, camelize, capitalize, hyphenate } from '../vue-bridge.js'
+import { handleError } from '../helpers/errors'
+import { CompositionContext } from '../app.js'
+import $watch from '../helpers/watcher'
+import { attach } from './features.js'
 
 class VM {
 

@@ -1,14 +1,14 @@
-export * from './runtime-bridge.js'
+export * from './vue-bridge.js'
 export * from './buildin'
 import React from 'react'
 import { Button, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import { isMemoSame, mergeProps } from './runtime-bridge.js'
+import { isMemoSame, mergeProps } from './vue-bridge.js'
 
 /**
  * mark the current rendering instance for asset resolution (e.g.
  * resolveComponent, resolveDirective) during render
  */
-import { onInstance } from './component.js'
+import { onInstance } from './component'
 let currentRenderingInstance = null
 var blockOpened = false
 
@@ -239,7 +239,7 @@ export const onDeactivated = createHook('deactivated')
 // ------------------------------------------------------------
 
 export { handleError } from './helpers/errors.js'
-export { createApp, createApp as createSSRApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component.js'
+export { createApp, createApp as createSSRApp, defineComponent, defineComponent as defineCustomElement, CompositionContext } from './component'
 
 // ------------------------------------------------------------
 

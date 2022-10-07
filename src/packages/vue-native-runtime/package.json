@@ -1,0 +1,15 @@
+{
+  "name": "@chainius/vue-native-runtime",
+  "version": "1.0.0",
+  "description": "vue to react native bridge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sacha Vandamme <sacha@skyhark.be> (https://www.core-server.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "@vue/runtime-core": "^3.2.40",
+    "@vue/runtime-dom": "^3.2.40"
+  }
+}

@@ -76,7 +76,7 @@ const modifierGuards = {
     left:    e => 'button' in e && e.button !== 0,
     middle:  e => 'button' in e && e.button !== 1,
     right:   e => 'button' in e && e.button !== 2,
-    exact:   (e, modifiers) => systemModifiers.some(m => e[`${m}Key`] && !modifiers.includes(m))
+    exact:   () => false
 }
 /**
  * @private

@@ -66,7 +66,7 @@ export default function init(config) {
     // Setup getters
     for(var key in config) {
         if (key[0] === '$') {
-            warn(`Invalid prop name: "${key}" is a reserved property.`)
+            console.warn(`Invalid prop name: "${key}" is a reserved property.`)
             continue
         }
 
@@ -100,11 +100,11 @@ export default function init(config) {
 // ----------------------------------------------------------------------------
 // Taken from VueJS library since those functions are not exported:
 
-const isSimpleType = /*#__PURE__*/ shared.makeMap('String,Number,Boolean,Function,Symbol,BigInt');
+const isSimpleType = /*#__PURE__*/ shared.makeMap('String,Number,Boolean,Function,Symbol,BigInt')
 
 function getType(ctor) {
-    const match = ctor && ctor.toString().match(/^\s*function (\w+)/);
-    return match ? match[1] : ctor === null ? 'null' : '';
+    const match = ctor && ctor.toString().match(/^\s*function (\w+)/)
+    return match ? match[1] : ctor === null ? 'null' : ''
 }
 
 /**

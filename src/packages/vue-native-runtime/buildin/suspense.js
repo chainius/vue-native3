@@ -3,10 +3,11 @@ import { handleError } from '../helpers/errors'
 
 export class Suspense extends React.PureComponent {
     #fallbackTimeout = null
+
     #renderers = {}
 
     state = {
-        show_fallback: true,
+        show_fallback:    true,
         has_pending_deps: false,
     }
 
@@ -221,7 +222,7 @@ export function defineAsyncComponent(options) {
         const [data, setData] = useState({
             id:        id++,
             component: options.loadingComponent && options.delay <= 0 ? <options.loadingComponent /> : null,
-        });
+        })
 
         // add changes listener
         useEffect(() => {
@@ -234,8 +235,8 @@ export function defineAsyncComponent(options) {
                     return setData(null)
 
                 setData({
-                    id:         data.id,
-                    component:  v,
+                    id:        data.id,
+                    component: v,
                 })
             }
 
@@ -243,8 +244,8 @@ export function defineAsyncComponent(options) {
                 if(setters !== null) {
                     delete setters[id]
                 }
-            };
-        });
+            }
+        })
 
         // return loaded component
         if(payload._status == 1) {
@@ -277,7 +278,7 @@ export function defineAsyncComponent(options) {
     // return suspensible component
     return {
         $$typeof: Symbol.for('react.lazy'),
-        _init: function(payload, suspense = false) {
+        _init:    function(payload, suspense = false) {
             if(payload._status < 1 && options.suspensible !== false && suspense) {
                 payload._status = 0
 

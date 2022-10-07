@@ -9,12 +9,12 @@ import { attach } from './features.js'
 class VM {
 
     helpers = {
-        watch_render_options: {},
-        emit_validators: {},
+        watch_render_options:  {},
+        emit_validators:       {},
         trigger_props_changed: () => {},
-        css_vars: () => ({}),
-        stylesheet: {},
-        known_props: {
+        css_vars:              () => ({}),
+        stylesheet:            {},
+        known_props:           {
             $parent:  true,
             $slots:   true,
             children: true,
@@ -25,15 +25,25 @@ class VM {
     vm = {}
 
     #components = {}
+
     #directives = {}
+
     #cache = {}
+
     #hooks = {}
+
     #stop_effect = () => null
+
     #global_config = {}
+
     #refs_attachers = {}
+
     #exposed = {}
+
     #did_setup_provider = false
+
     #provided = {}
+
     #provided_with_ctx = null
 
     // setup VM instance
@@ -59,13 +69,13 @@ class VM {
 
         Object.defineProperty(this.vm, '$attrs', {
             enumerable: true,
-            get: () => this.$attrs,
+            get:        () => this.$attrs,
         })
 
 
         Object.defineProperty(this.vm, '$root', {
             enumerable: true,
-            get: () => global_config.$root,
+            get:        () => global_config.$root,
         })
 
         this.vm.$captureError = this.$captureError.bind(this)
@@ -92,14 +102,14 @@ class VM {
                 for(var name in this.vm) {
                     Object.defineProperty(this.#exposed, name, {
                         enumerable: true,
-                        get: getter.bind(this.vm, name),
+                        get:        getter.bind(this.vm, name),
                     })
                 }
 
                 for(var name of options.expose || []) {
                     Object.defineProperty(this.#exposed, name, {
                         enumerable: true,
-                        get: getter.bind(this.vm, name),
+                        get:        getter.bind(this.vm, name),
                     })
                 }
             }

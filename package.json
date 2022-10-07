@@ -33,17 +33,9 @@
         "build": "node scripts/build.js",
         "release": "bash scripts/release.sh"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "npm run lint:fix"
-        }
-    },
     "homepage": "https://github.com/chainius/vue-native3",
     "dependencies": {
         "eslint": "^8.24.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-flowtype": "^8.0.3",
-        "eslint-plugin-prettier": "^4.2.1",
-        "prettier": "^2.7.1"
+        "eslint-plugin-react": "^7.31.8"
     }
 }

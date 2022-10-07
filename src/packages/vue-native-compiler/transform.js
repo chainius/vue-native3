@@ -86,32 +86,32 @@ function compile(data, options = {}) {
                 }
 
                 // for(var prop of node.props || []) {
-                    // if(prop.name == 'class') {
-                    //     prop.name = 'bind'
-                    //     prop.modifiers = []
-                    //     prop.type = 2
-                    //     prop.arg = {
-                    //         type: 4,
-                    //         content: 'class',
-                    //         isStatic: true,
-                    //         isConstant: true,
-                    //         loc: prop.loc
-                    //     }
+                // if(prop.name == 'class') {
+                //     prop.name = 'bind'
+                //     prop.modifiers = []
+                //     prop.type = 2
+                //     prop.arg = {
+                //         type: 4,
+                //         content: 'class',
+                //         isStatic: true,
+                //         isConstant: true,
+                //         loc: prop.loc
+                //     }
 
-                    //     var classes = {}
-                    //     for(var item of prop.value.content.split(' ')) {
-                    //         classes[item] = true
-                    //     }
+                //     var classes = {}
+                //     for(var item of prop.value.content.split(' ')) {
+                //         classes[item] = true
+                //     }
 
-                    //     prop.exp = {
-                    //         type: 4,
-                    //         content: JSON.stringify(classes),
-                    //         isStatic: false,
-                    //         constType: 3,
-                    //         loc: prop.loc,
-                    //         identifiers: []
-                    //     }
-                    // }
+                //     prop.exp = {
+                //         type: 4,
+                //         content: JSON.stringify(classes),
+                //         isStatic: false,
+                //         constType: 3,
+                //         loc: prop.loc,
+                //         identifiers: []
+                //     }
+                // }
                 // }
             },
             // isBuiltInComponent(tag) {

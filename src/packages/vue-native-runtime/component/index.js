@@ -114,7 +114,7 @@ export function defineComponent(app) {
             $$typeof: Symbol.for('react.lazy'),
             _init(payload, suspensible = false, props = {}) {
                 global_config = GlobalContext // ToDo use react context
-                const [ pre, setup, post ] = getSetup()
+                const [pre, setup, post] = getSetup()
 
                 const vm = new VM( global_config, app, props )
                 pre(vm, props)
@@ -139,7 +139,7 @@ export function defineComponent(app) {
 
     // generate sync component
     return generateComponent(function(props) {
-        const [ pre, setup, post ] = getSetup()
+        const [pre, setup, post] = getSetup()
         const vm = new VM( global_config, app, props )
 
         pre(vm, props)

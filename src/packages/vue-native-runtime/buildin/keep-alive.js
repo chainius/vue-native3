@@ -1,17 +1,18 @@
-import React from "react";
+import React from "react"
 import { View } from 'react-native'
 import shared from '@vue/shared'
 
 function matches(pattern, name) {
     if (shared.isArray(pattern)) {
-        return pattern.some((p) => matches(p, name));
+        return pattern.some((p) => matches(p, name))
     } else if (shared.isString(pattern)) {
-        return pattern.split(',').includes(name);
+        return pattern.split(',').includes(name)
     } else if (pattern.test) {
-        return pattern.test(name);
+        return pattern.test(name)
     }
+
     /* istanbul ignore next */
-    return false;
+    return false
 }
 
 export class KeepAlive extends React.PureComponent {

@@ -84,7 +84,7 @@ function mergeOptions(to, from, strats, asMixin = false) {
 
     for (const key in from) {
         if (asMixin && key === 'expose') {
-            warn(`"expose" option is ignored when declared in mixins or extends. ` +
+            console.warn(`"expose" option is ignored when declared in mixins or extends. ` +
                     `It should only be declared in the base component itself.`)
         } else {
             const strat = internalOptionMergeStrats[key] || (strats && strats[key])

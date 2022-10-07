@@ -11,13 +11,13 @@ export function initGlobalConfig() {
         components: {},
         directives: {},
         mixins:     [],
-        config: {
-            errorHandler:           null,
-            warnHandler:            null,
-            performance:            true,
-            compilerOptions:        {},
-            globalProperties:       {},
-            optionMergeStrategies:  {},
+        config:     {
+            errorHandler:          null,
+            warnHandler:           null,
+            performance:           true,
+            compilerOptions:       {},
+            globalProperties:      {},
+            optionMergeStrategies: {},
         }
     }
 }

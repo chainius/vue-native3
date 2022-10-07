@@ -2,10 +2,10 @@
     "root": true,
     "parserOptions": {
       "parser": "babel-eslint",
-      "ecmaVersion": 2020,
+      "ecmaVersion": 13,
       "sourceType": "module",
       "ecmaFeatures": {
-          "jsx": true
+        "jsx": true
       }
     },
     "env": {
@@ -13,20 +13,37 @@
       "node": true,
       "browser": true
     },
-    "plugins": [
-      "flowtype",
-      "prettier"
-    ],
     "extends": [
-      "eslint:recommended",
-      "plugin:prettier/recommended"
+      "plugin:react/recommended",
+      "eslint:recommended"
     ],
     "rules": {
-      "prettier/prettier": ["error"],
-      "no-console": 0,
-      "no-useless-escape": 0,
-      "no-empty": 0,
-      "semi": ["error", "never"],
-      "comma-dangle": ["error", "always-multiline"]
+      "indent":                           ["error", 4],
+      "no-empty":                         ["error", { "allowEmptyCatch": true }],
+      "no-redeclare":                     "off",
+      "no-unused-vars":                   ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": true, "varsIgnorePattern": "React" }],
+      "brace-style":                      ["error", "1tbs", { }],
+      "object-curly-spacing":             ["error", "always"],
+      "nonblock-statement-body-position": ["error", "below"],
+      "array-bracket-spacing":            ["error", "never"],
+      "space-before-blocks":              ["error", "always"],
+      "comma-spacing":                    ["error", { "before": false, "after": true }],
+      "comma-style":                      ["error", "last"],
+      "arrow-spacing":                    ["error", { "before": true, "after": true }],
+      "no-multi-spaces":                  ["error", { "ignoreEOLComments": true }],
+      "key-spacing":                      ["error", { "beforeColon": false, "align": "value" }],
+      "semi":                             ["error", "never"],
+      "lines-between-class-members":      ["error", "always"],
+      "quote-props":                      ["error", "consistent-as-needed"],
+      "padding-line-between-statements":  [
+          "error",
+          { "blankLine": "always", "prev": "if", "next": "*" },
+          { "blankLine": "always", "prev": "switch", "next": "*" },
+          { "blankLine": "always", "prev": "*", "next": "switch" },
+          { "blankLine": "never", "prev": "*", "next": "block" },
+      ]
+    },
+    "globals": {
+      "__DEV__": true
     }
   }

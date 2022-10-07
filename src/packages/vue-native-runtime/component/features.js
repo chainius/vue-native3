@@ -60,7 +60,7 @@ export function withProps(options) {
     if(!options.props)
         return
 
-    props_setup = init_props(options.props)
+    var props_setup = init_props(options.props)
     return function(vm, helpers) {
         for(var prop in options.props) {
             helpers.known_props[prop] = true
@@ -254,7 +254,9 @@ export function withComputed(options) {
 
             Object.defineProperty(vm, key, {
                 get: () => data.value,
-                set: value => data.value = value
+                set: (value) => {
+                    data.value = value
+                }
             })
         }
     }

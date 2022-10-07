@@ -45,7 +45,7 @@ export function h(T, props = {}, children = null) {
     return <T { ...props }>{children}</T>
 }
 
-function render(T, props, children, patchFlag, dynamicProps) {
+function render(T, props, children) {
     if(!T)
         return null
 
@@ -75,7 +75,7 @@ function render(T, props, children, patchFlag, dynamicProps) {
     }
 
     if(!Array.isArray(children)) {
-        children = [ children ]
+        children = [children]
     }
 
     return React.createElement(
@@ -144,7 +144,7 @@ export function renderList(items, cb) {
     return res
 }
 
-export function renderSlot(slots, name, props = {}, fallback, noSlotted) {
+export function renderSlot(slots, name, props = {}, fallback) {
     var item = slots[name] || fallback
     if(typeof(item) == 'function')
         item = item(props)
@@ -184,14 +184,14 @@ import { KeepAlive, Suspense } from './buildin'
 export { Text } from 'react-native'
 
 const components = {
-    view:          View,
-    button:        Button,
-    text:          Text,
-    touchable:     TouchableOpacity,
-    'keep-alive':  KeepAlive,
-    KeepAlive:     KeepAlive,
-    suspense:      Suspense,
-    Suspense:      Suspense,
+    "view":       View,
+    "button":     Button,
+    "text":       Text,
+    "touchable":  TouchableOpacity,
+    'keep-alive': KeepAlive,
+    "KeepAlive":  KeepAlive,
+    "suspense":   Suspense,
+    "Suspense":   Suspense,
 }
 
 export function resolveComponent(name) {
@@ -298,7 +298,7 @@ export const vShow = {
     },
 
     // called before the parent component is updated
-    beforeUpdate(el, { value })  {
+    beforeUpdate(el, { value }) {
         if(!value) {
             el.style.display = 'none'
         }

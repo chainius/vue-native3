@@ -8311,9 +8311,12 @@ const GlobalContext = initGlobalConfig(); // React.createContext({})
 
 function attachApp(component, props = {}) {
   var global_config = GlobalContext; // initGlobalConfig()
-  props.ref = (app) => {
-    global_config.$root = (app && app._vm) || app;
-  };
+
+  if (typeof component !== "function") {
+    props.ref = (app) => {
+      global_config.$root = (app && app._vm) || app;
+    };
+  }
 
   const App = function () {
     return React__default["default"].createElement(component, props);

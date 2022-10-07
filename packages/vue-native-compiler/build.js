@@ -269,5 +269,6 @@ module.exports.transform = function (config) {
     config.src = app.script || "";
   }
 
-  return upstreamTransformer.transform(config);
+  var transformer = config.upstreamTransformer || upstreamTransformer;
+  return transformer.transform(config);
 };

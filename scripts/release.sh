@@ -1,8 +1,8 @@
 set -e
 
 CURRENT_BRANCH=$(git branch --show-current)
-if [ $CURRENT_BRANCH != "master" ]; then
-  echo "This script can only be run in the master branch. Exiting..."
+if [ $CURRENT_BRANCH != "main" ]; then
+  echo "This script can only be run in the main branch. Exiting..."
   exit 1
 fi
 

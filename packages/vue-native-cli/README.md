@@ -1,6 +1,6 @@
 # Vue Native CLI
 
-## Build Native Mobile apps using Vue
+## Build Native Mobile apps using Vue 3
 
 > Vue Native is a wrapper around the APIs of React Native. So, with Vue Native, you can do everything what you can do with React Native.
 

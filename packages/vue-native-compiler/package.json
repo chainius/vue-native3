@@ -1,6 +1,6 @@
 {
   "name": "@vue-native3/compiler",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "vue native compiler",
   "main": "main.js",
   "author": "Chainius (https://www.bit4you.io/)",
@@ -16,6 +16,7 @@
     "url": "https://github.com:chainius/vue-native3.git"
   },
   "keywords": [
+    "vue-native",
     "vue",
     "native",
     "cli"

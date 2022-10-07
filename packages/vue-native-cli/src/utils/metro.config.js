@@ -6,9 +6,8 @@
  */
 
 const { getDefaultConfig } = require('@expo/metro-config')
-const { merge } = require('@vue-native3/compiler')
+const registerVueCompiler = require('@vue-native3/compiler')
 
 var config = getDefaultConfig(__dirname)
-config = merge(config)
 
-module.exports = config
+module.exports = registerVueCompiler(config)

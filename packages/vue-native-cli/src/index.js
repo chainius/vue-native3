@@ -317,14 +317,6 @@ async function setupVueNativeApp(projectName, cmd, isCrna = false) {
     mainVueFileContent
   );
 
-  const babelConfig = fs.readFileSync(
-    path.resolve(__dirname, "./utils/babel.config.js")
-  );
-  fs.writeFileSync(
-    path.join(projectName, "babel.config.js"),
-    babelConfig
-  );
-
   console.log(
     chalk.green("Setup complete!")
   );

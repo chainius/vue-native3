@@ -3,7 +3,6 @@ const CompilerDOM = require('@vue/compiler-dom')
 const transform_css = require('css-to-react-native-transform')
 const fs = require('fs')
 const path = require('path')
-const upstreamTransformer = require("metro-react-native-babel-transformer")
 
 // wrapper arround SFC parser to support native & web attributes to filter templates/styles/scripts/...
 function parse(data, options) {
@@ -204,18 +203,28 @@ function compile(data, options = {}) {
 // exports compiler
 module.exports = compile
 
+var projectConfigs = {}
+
 // metro bundler transformer
 module.exports.transform = function(config) {
-    if(config.filename.endsWith('.vue')) {
-        var vueConfig = {}
+    
+    // load project config
+    var metroConfig = projectConfigs[config.options.projectRoot]
+    if(!metroConfig) {
+        metroConfig = {}
 
         try {
-            const metroConfig = require(config.options.projectRoot + '/metro.config')
-            vueConfig = metroConfig.transformer?.vue || {}
+            metroConfig = require(config.options.projectRoot + '/metro.config')
         } catch(e) {
             console.error("could not load metro config", e)
         }
 
+        projectConfigs[config.options.projectRoot] = metroConfig
+    }
+
+    // transform vue files
+    if(config.filename.endsWith('.vue')) {
+        var vueConfig = metroConfig.transformer?.vue || {}
         var app = compile(config.src, config)
 
         // debug compiled code
@@ -229,6 +238,6 @@ module.exports.transform = function(config) {
         config.src = app.script || ''
     }
 
-    var transformer = config.upstreamTransformer || upstreamTransformer
+    const transformer = config.upstreamTransformer || require(metroConfig.transformer.upstreamTransformer || 'metro-react-native-babel-transformer')
     return transformer.transform(config)
 }

@@ -15,7 +15,7 @@ const builds = {
     },
     'vue-native-babel': {
         entry:  resolve('src/packages/vue-native-compiler/transform.js'),
-        dest:   resolve('packages/vue-native-compiler/build.js'),
+        dest:   resolve('packages/vue-native-compiler/transform.js'),
         format: 'cjs',
     },
     'vue-native-compiler': {

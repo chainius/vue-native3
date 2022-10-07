@@ -1,4 +1,4 @@
-# @vue-native/runtime
+# @vue-native3/runtime
 
 > This package is auto-generated. For pull requests please work with [src/packages/vue-native-runtime](https://github.com/chainius/vue-native3/tree/main/src/packages/vue-native-runtime).
 

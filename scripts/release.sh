@@ -75,7 +75,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   # Push the tags and version update
   git push origin v$VERSION
-  git push origin master
+  git push origin main
 
   echo "\nPublished v$VERSION!"
 fi

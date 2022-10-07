@@ -1,13 +1,26 @@
 {
   "name": "@vue-native3/compiler",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "vue native compiler",
   "main": "main.js",
+  "author": "Chainius (https://www.bit4you.io/)",
+  "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Sacha Vandamme <sacha@skyhark.be> (https://www.core-server.io/)",
-  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chainius/vue-native3/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com:chainius/vue-native3.git"
+  },
+  "keywords": [
+    "vue",
+    "native",
+    "cli"
+  ],
+  "homepage": "https://github.com/chainius/vue-native3",
   "dependencies": {
     "@vue/compiler-sfc": "^3.2.40",
     "css-to-react-native-transform": "^2.0.0"

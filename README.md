@@ -32,7 +32,7 @@ The source for the Vue Native documentation and website is hosted on a separate 
 
 To install Vue Native's official CLI, run
 ```
-$ npm install @vue-native/cli -g
+$ npm install @vue-native3/cli -g
 ```
 
 To use the CLI, you must have either [expo-cli](https://github.com/expo/expo-cli) or [react-native-cli](https://github.com/react-native-community/cli) installed globally.

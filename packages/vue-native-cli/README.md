@@ -1,5 +1,3 @@
-## ⚠️ This project has been deprecated and is no longer maintained ⚠️
-
 # Vue Native CLI
 
 ## Build Native Mobile apps using Vue
@@ -28,10 +26,10 @@ You will also need [Android Studio](https://developer.android.com/studio) / [Xco
 
 ## Installation
 
-Once the prerequisites have been installed, you are all set to install `vue-native-cli`.
+Once the prerequisites have been installed, you are all set to install `@vue-native3/cli`.
 
 ```
-$ npm install -g vue-native-cli
+$ npm install -g @vue-native3/cli
 ```
 
 ## Usage

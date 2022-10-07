@@ -22,12 +22,11 @@ The Metro bundler is used by React Native to generate app bundles. It can be con
 
 ```js
 const { getDefaultConfig } = require('@expo/metro-config')
-const vue = require('@vue-native3/compiler')
+const registerVueCompiler = require('@vue-native3/compiler')
 
 var config = getDefaultConfig(__dirname)
-config = vue.merge(config)
 
-module.exports = config
+module.exports = registerVueCompiler(config)
 ```
 
 #### NOTE to Expo users:
@@ -53,26 +52,7 @@ The `app.json` file must be modified to allow `.vue` files to be recognised.
 ```
 
 
-The `babelTransformPath` will be replaced in order to support vue files.
-If you need to use your own babel transformer, you should replace the babelTransformPath to a custom file. You can forward transformations to your upstream resolver as shown on the following example
 
-
-```js
-const vueNativeScripts = require("@vue-native3/compiler");
-
-const upstreamTransformer = require("metro-react-native-babel-transformer");
-
-module.exports.transform = function ({ src, filename, options }) {
-  return vueNativeScripts.transform({
-    src,
-    filename,
-    options,
-    upstreamTransformer,
-  });
-};
-```
-
-This file uses [@vue-native3/runtime](https://www.npmjs.com/package/@vue-native3/runtime) to transform Vue files to JS code. Once the JavaScript code has been generated this code is transformed using the React Native Babel transformer.
 
 ## Using Vue Native components and `.vue` files
 

@@ -18,56 +18,6 @@
     </view>
 </template>
 
-
-<script>
-
-    // import Lvl1 from '../lvl1.vue/index.vue'
-    import Lvl2 from '../lvl2.vue/index.vue'
-
-    export default {
-        components: {
-            // Lvl1,
-            Lvl2,
-        },
-        name: 'test-component',
-        errorCaptured(e) {
-            console.log('error captured from component', e)
-        },
-        data() {
-            return {
-                color: '#212121',
-                item: 0,
-            }
-        },
-        mounted() {
-            var i = 0 
-            var colors = [
-                'blue',
-                'purple',
-                'black',
-                'red',
-            ]
-
-            setInterval(() => {
-                i++
-                this.color = colors[i%colors.length]
-            }, 1000)
-        },
-        methods: {
-            onPending() {
-                console.log('pending process started')
-            },
-            onFallback() {
-                console.log('showing fallback')
-            },
-            onResolve() {
-                console.log('suspense resolved')
-            }
-        }
-    }
-
-</script>
-
 <style>
 
     .text2 {

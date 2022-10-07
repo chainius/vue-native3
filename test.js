@@ -6,6 +6,6 @@ const data = fs.readFileSync('./'+file+'/index.vue').toString()
 
 const app = transform(data)
 
-fs.writeFileSync('./'+file+'/script.js', app.script)
+fs.writeFileSync('./'+file+'/index.vue.js', app.script)
 
 console.log('vue file compiled')

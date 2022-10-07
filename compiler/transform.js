@@ -2,6 +2,7 @@ const SFC = require('@vue/compiler-sfc')
 const CompilerDOM = require('@vue/compiler-dom')
 const transform_css = require('css-to-react-native-transform')
 const fs = require('fs')
+const path = require('path')
 var upstreamTransformer = require("metro-react-native-babel-transformer")
 
 // wrapper arround SFC parser to support native & web attributes to filter templates/styles/scripts/...
@@ -133,7 +134,7 @@ function compile(data, options = {}) {
         })
 
         if(!app.scriptSetup && app.template) {
-            res.script.content = SFC.rewriteDefault(res.script.content, '__DEFAULT_WITH_TEMPLATE__', [])
+            res.script.content = SFC.rewriteDefault(res.script.content, '__DEFAULT_PRE_TEMPLATE__', [])
 
             const template = SFC.compileTemplate({
                 filename:        app.filename,
@@ -147,17 +148,17 @@ function compile(data, options = {}) {
             })
 
             template.code = template.code.replace('export function render', 'function __TEMPLATE_RENDER__')
-            res.script.content += "\n\n" + template.code + "\n\nexport default Object.assign({ render: __TEMPLATE_RENDER__, __name: "+JSON.stringify(name)
+            res.script.content += "\n\n" + template.code + "\n\nconst __DEFAULT_WITH_TEMPLATE__ = Object.assign({ render: __TEMPLATE_RENDER__, __name: "+JSON.stringify(name)
             if(style) {
                 res.script.content += ", stylesheet: __VUE_STYLESHEET__"
             }
 
-            res.script.content += " }, __DEFAULT_WITH_TEMPLATE__)"
-        } else if(style && res.script.content.includes('export default __default__')) {
-            res.script.content += "\n\n__default__.stylesheet = __VUE_STYLESHEET__" 
-        } else if(style) {
+            res.script.content += " }, __DEFAULT_PRE_TEMPLATE__)"
+        } else {
             res.script.content = SFC.rewriteDefault(res.script.content, '__DEFAULT_WITH_TEMPLATE__', [])
-            res.script.content += "\n\n__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__\nexport default __DEFAULT_WITH_TEMPLATE__"
+            if(style) {
+                res.script.content += "\n\n__DEFAULT_WITH_TEMPLATE__.stylesheet = __VUE_STYLESHEET__"
+            } 
         }
 
         res.script = res.script.content
@@ -173,7 +174,15 @@ function compile(data, options = {}) {
         })
 
         // generate script
-        res.script = res.script.code + "\n\nexport default {\n  __name: " + JSON.stringify(name) + ",\n  render"
+        res.script = res.script.code + "\n\nconst __DEFAULT_WITH_TEMPLATE__ = {\n  __name: " + JSON.stringify(name) + ",\n  render"
+        if(style) {
+            res.script += ",\n  stylesheet: __VUE_STYLESHEET__,\n}"
+        } else {
+            res.script += "\n}"
+        }
+    } else {
+        res.script = "const __DEFAULT_WITH_TEMPLATE__ = {\n  __name: " + JSON.stringify(name)
+
         if(style) {
             res.script += ",\n  stylesheet: __VUE_STYLESHEET__,\n}"
         } else {
@@ -184,8 +193,10 @@ function compile(data, options = {}) {
     // ToDo add custom blocks
 
     if(style != '') {
-        res.script = style + res.script
+        res.script = style + (res.script || '')
     }
+
+    res.script = res.script + "\n\nimport { defineComponent as _frsDefineComponent } from 'vue'\nexport default _frsDefineComponent(__DEFAULT_WITH_TEMPLATE__)"
 
     return res
 }
@@ -196,19 +207,27 @@ module.exports = compile
 // metro bundler transformer
 module.exports.transform = function(config) {
     if(config.filename.endsWith('.vue')) {
-        const base = config.filename.substr(0, config.filename.lastIndexOf('/'))
+        var vueConfig = {}
+
+        try {
+            const metroConfig = require(config.options.projectRoot + '/metro.config')
+            vueConfig = metroConfig.transformer?.vue || {}
+        } catch(e) {
+            console.error("could not load metro config", e)
+        }
+
         var app = compile(config.src, config)
 
-        app.script && fs.writeFileSync(base + "/script.js", app.script)
+        // debug compiled code
+        if(vueConfig.saveJS && app.script) {
+            fs.writeFileSync(config.filename + '.js', app.script)
 
-        config.src = fs.readFileSync('./test.vue/index.js', 'utf8')
+            const src = JSON.stringify("./" + path.basename(config.filename) + '.js')
+            app.script = "import App from " + src + "\nexport default App\nexport * from " + src
+        }
+
+        config.src = app.script || ''
     }
 
     return upstreamTransformer.transform(config)
 }
-
-// module.exports.transform({
-//     filename: 'my-app/src/App.vue',
-//     src: require('fs').readFileSync('./test.vue/index.vue').toString(),
-//     options: {},
-// })

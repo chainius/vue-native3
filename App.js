@@ -40,12 +40,10 @@ export default function() {
     }, 1000)
 
     return (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{count}</Text>
-            <VueSuspense fallback={loading()}>
-            
+            <Text>App.js {count}</Text>
                 <Lvl2 myprop={1} />
-                {/* { count % 2 == 0 ? <Text>innter</Text> : null } */}
-            </VueSuspense>
+            {/* <VueSuspense fallback={loading()}>
+            </VueSuspense> */}
         </View>
     )
 }

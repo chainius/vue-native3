@@ -1,35 +1,8 @@
 <template>
     <touchable @press="increment" style="backgroundColor: red; flex: 1; width: 100%; justifyContent: center; alignItems: center">
-        <text class="title">{{state.count}} second</text>
+        <text class="title">vue binding</text>
     </touchable>
 </template>
-
-<script setup>
-
-    import { withHooks } from 'vue'
-    import { useState } from 'react';
-
-    var lastTimeout = null
-
-    const tm = new Promise((resolve) => setTimeout(resolve, 1000))
-    await tm
-
-    console.log('timeout reached')
-
-    const state = withHooks(() => {
-        const [ count, setCount ] = useState(0);
-
-        clearTimeout(lastTimeout)
-        lastTimeout = setTimeout(() => {
-            setCount(count + 1);
-        }, 10);
-
-        return {
-            count: 1000 + count,
-        }
-    })
-
-</script>
 
 <script>
 
@@ -74,7 +47,7 @@
 <style scoped>
 
     .title {
-        color: #fff;
+        color: #000;
         fontSize: 25px;
         marginBottom: 15px;
     }

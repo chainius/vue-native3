@@ -301,6 +301,8 @@ export default function setup(options, render) {
     )
 
     const post = createChain(
+        options,
+        render,
         withRender,
         withMethods,
         withDirectives,

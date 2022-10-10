@@ -8362,9 +8362,15 @@ function attachApp(component, props = {}) {
     return global_config.directives[name];
   };
 
+  const installed = {};
   App.use = (plugin, options) => {
+    if (installed[plugin]) return App;
+
+    installed[plugin] = true;
     if (plugin && plugin.install) {
       plugin.install(App, options);
+    } else if (typeof plugin === "function") {
+      plugin(App, options);
     }
 
     return App;
@@ -9575,6 +9581,7 @@ function defineComponent(app) {
       }
     }
 
+    VueComponent.options = app;
     VueComponent.$slots = true;
 
     if (app.name) {
@@ -9590,6 +9597,7 @@ function defineComponent(app) {
   if (app.async) {
     return {
       $$typeof: Symbol.for("react.lazy"),
+      options: app,
       _init(payload, suspensible = false, props = {}) {
         global_config = GlobalContext; // ToDo use react context
         const [pre, setup, post] = getSetup();

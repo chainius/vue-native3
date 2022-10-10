@@ -1,6 +1,6 @@
 {
   "name": "@vue-native3/compiler",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "vue native compiler",
   "main": "main.js",
   "author": "Chainius (https://www.bit4you.io/)",
@@ -23,7 +23,10 @@
   ],
   "homepage": "https://github.com/chainius/vue-native3",
   "dependencies": {
+    "@vue/compiler-dom": "^3.2.40",
     "@vue/compiler-sfc": "^3.2.40",
-    "css-to-react-native-transform": "^2.0.0"
+    "css-to-react-native-transform": "^2.0.0",
+    "rollup": "^2.79.1",
+    "unplugin": "^0.9.6"
   }
 }

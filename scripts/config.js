@@ -13,12 +13,13 @@ const builds = {
         format:   'cjs',
         external: ['react', 'react-native', '@vue/shared'],
     },
-    'vue-native-babel': {
-        entry:  resolve('src/packages/vue-native-compiler/transform.js'),
-        dest:   resolve('packages/vue-native-compiler/transform.js'),
-        format: 'cjs',
-    },
     'vue-native-compiler': {
+        entry:    resolve('src/packages/vue-native-compiler/src/transform.mjs'),
+        dest:     resolve('packages/vue-native-compiler/transform.js'),
+        external: ['fs', 'path', 'rollup', 'unplugin', 'css-to-react-native-transform', '@vue/compiler-sfc', '@vue/compiler-dom'],
+        format:   'cjs',
+    },
+    'vue-native-plugin': {
         entry:  resolve('src/packages/vue-native-compiler/main.js'),
         dest:   resolve('packages/vue-native-compiler/main.js'),
         format: 'cjs',

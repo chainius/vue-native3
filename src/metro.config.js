@@ -16,7 +16,17 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 }
 
 config.transformer.vue = {
-    // saveJS: true,
+    // saveJS:  true,
+    // plugins: [
+    //     require('../test/plugins/graphql').rollup(),
+    // ],
+    // templateOptions: {
+    //     compilerOptions: {
+    //         nodeTransforms(node) {
+    //             console.log('transform node', node)
+    //         }
+    //     }
+    // }
 }
 
 module.exports = registerVueCompiler(config)

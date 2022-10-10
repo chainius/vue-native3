@@ -1,6 +1,6 @@
 {
   "name": "@vue-native3/runtime",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "runtime to bridge vue components to react native",
   "main": "build.js",
   "scripts": {

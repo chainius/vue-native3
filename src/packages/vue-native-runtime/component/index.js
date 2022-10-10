@@ -97,6 +97,7 @@ export function defineComponent(app) {
             }
         }
 
+        VueComponent.options = app
         VueComponent.$slots = true
 
         if(app.name) {
@@ -112,6 +113,7 @@ export function defineComponent(app) {
     if(app.async) {
         return {
             $$typeof: Symbol.for('react.lazy'),
+            options:  app,
             _init(payload, suspensible = false, props = {}) {
                 global_config = GlobalContext // ToDo use react context
                 const [pre, setup, post] = getSetup()

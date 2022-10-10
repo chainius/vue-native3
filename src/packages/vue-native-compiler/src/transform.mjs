@@ -61,7 +61,7 @@ export async function transform(config) {
 
     // transform vue files
     if(config.filename.endsWith('.vue')) {
-        var vueConfig = metroConfig.transformer?.vue || {}
+        var vueConfig = metroConfig.vue || metroConfig.transformer?.vue || {}
         var app = await compile(config, vueConfig)
 
         // debug compiled code

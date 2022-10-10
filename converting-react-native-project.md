@@ -99,3 +99,25 @@ const App = createApp(MyApp)
 
 export default App
 ```
+
+### Adding rollup plugins
+
+If you want to use some rollup plugins, you can extends the metro config file.
+He is a small sample how to add a rollup plugin:
+
+```js
+const { getDefaultConfig } = require('@expo/metro-config')
+const registerVueCompiler = require('@vue-native3/compiler')
+const myPlugin = require('my-plugin')
+
+var config = getDefaultConfig(__dirname)
+
+config.vue = {
+  plugins: [
+    myPlugin,
+  ],
+  // templateOptions: { ... },
+}
+
+module.exports = registerVueCompiler(config)
+```

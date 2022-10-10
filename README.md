@@ -15,6 +15,7 @@ Vue Native is a framework to build cross platform native mobile apps using JavaS
   - [Contents](#contents)
   - [Documentation](#documentation)
   - [Installation](#installation)
+    - [Advanced setup](#advanced-setup)
   - [Project setup with Vue Native CLI](#project-setup-with-vue-native-cli)
   - [Using Vue Native in a React Native project](#using-vue-native-in-a-react-native-project)
   - [Available React Native components](#available-react-native-components)
@@ -36,6 +37,12 @@ $ npm install @vue-native3/cli -g
 ```
 
 To use the CLI, you must have either [expo-cli](https://github.com/expo/expo-cli) or [react-native-cli](https://github.com/react-native-community/cli) installed globally.
+
+### Advanced setup
+
+An advanded guide is avaialbe [here](https://github.com/chainius/vue-native3/blob/main/converting-react-native-project.md).
+It's possible to extends the compiler with some rollup plugins in order to support for instance custom blocks.
+
 
 ## Project setup with Vue Native CLI
 

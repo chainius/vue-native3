@@ -52,6 +52,9 @@ export async function transform(config) {
 
         try {
             metroConfig = require(config.options.projectRoot + '/metro.config')
+
+            if(typeof(metroConfig) == 'function')
+                metroConfig = await metroConfig(config.options.projectRoot)
         } catch(e) {
             console.error("could not load metro config", e)
         }

@@ -299,6 +299,9 @@ async function transform(config) {
 
     try {
       metroConfig = require(config.options.projectRoot + "/metro.config");
+
+      if (typeof metroConfig == "function")
+        metroConfig = await metroConfig(config.options.projectRoot);
     } catch (e) {
       console.error("could not load metro config", e);
     }
@@ -308,7 +311,7 @@ async function transform(config) {
 
   // transform vue files
   if (config.filename.endsWith(".vue")) {
-    var vueConfig = metroConfig.transformer?.vue || {};
+    var vueConfig = metroConfig.vue || metroConfig.transformer?.vue || {};
     var app = await compile(config, vueConfig);
 
     // debug compiled code

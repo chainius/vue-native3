@@ -5,7 +5,7 @@ import { createUnplugin } from 'unplugin'
 import mergeTemplateOptions from './merge-template-options.mjs'
 
 // wrapper arround SFC parser to support native & web attributes to filter templates/styles/scripts/...
-function parse(data, options) {
+export function parse(data, options) {
     const remove_tags = options.mode == 'native' ? 'web' : 'native'
 
     options = Object.assign({

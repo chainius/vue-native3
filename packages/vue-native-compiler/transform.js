@@ -285,7 +285,7 @@ async function compile(config, vueConfig) {
 function upstreamTransform(config, metroConfig) {
   const transformer =
     config.upstreamTransformer ||
-    require(metroConfig.transformer.upstreamTransformer ||
+    require((metroConfig.transformer && metroConfig.transformer.upstreamTransformer)||
       "metro-react-native-babel-transformer");
   return transformer.transform(config);
 }

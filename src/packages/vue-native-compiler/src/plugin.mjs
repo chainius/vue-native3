@@ -42,7 +42,7 @@ function generateStyle(app, id, shortID) {
         source: app.styles.reduce((a, b) => a + b.content + "\n", "").trim(' '),
     })
 
-    style = transform_css(style.code)
+    style = transform_css.default(style.code)
 
     const styles = style
     style = `import { StyleSheet } from 'react-native';\n`

@@ -5,7 +5,7 @@
     </view>
 </template>
 
-<script setup>
+<!-- <script setup>
 
     var test = "lady"
 
@@ -16,8 +16,19 @@
         }
     }
 
-</script>
+</script> -->
 
+
+<script>
+
+    // console.log(app)
+    // console.log(test)
+    
+    export default {
+        name: 'test'
+    }
+
+</script>
 
 <style scoped>
 

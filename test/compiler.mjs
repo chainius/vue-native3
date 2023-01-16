@@ -2,6 +2,7 @@ import fs from 'fs'
 import { rollup } from 'rollup'
 import graphql from './plugins/graphql.js'
 import vue from '../src/packages/vue-native-compiler/src/plugin.mjs'
+import importer from './plugins/importer.js'
 
 const parserConfig = {
     filename:        'main.vue',
@@ -115,6 +116,7 @@ const config = {
     plugins: [
         vue.rollup(parserConfig),
         graphql.rollup(),
+        importer.rollup(),
     ],
     output: [{
         file:   'bundle.js',

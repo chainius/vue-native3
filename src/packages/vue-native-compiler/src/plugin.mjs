@@ -182,11 +182,15 @@ export default createUnplugin((parserConfig) => {
                 }
             }
 
-            // generate custom blocks
-            return {
-                code: app.customBlocks[0].content,
-                map:  app.customBlocks[0].map,
+            if(app.customBlocks && app.customBlocks[0]) {
+                return {
+                    code: app.customBlocks[0].content,
+                    map:  app.customBlocks[0].map,
+                }
             }
+
+            // generate custom blocks
+            return null
         }
     }
 })

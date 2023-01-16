@@ -88,7 +88,7 @@ function generateStyle(app, id, shortID) {
     source: app.styles.reduce((a, b) => a + b.content + "\n", "").trim(" "),
   });
 
-  style = transform_css__default["default"](style.code);
+  style = transform_css__default["default"].default(style.code);
 
   const styles = style;
   style = `import { StyleSheet } from 'react-native';\n`;
@@ -166,8 +166,12 @@ var vue = unplugin.createUnplugin((parserConfig) => {
         var code = "";
 
         // add template & script
-        if (app.script || app.scriptSetup) {
+        if (app.scriptSetup || (app.script && !app.template)) {
           code = genImport(parserConfig, "options", "script");
+        } else if (app.script) {
+          code = genImport(parserConfig, "{ render }", "template");
+          code = code + genImport(parserConfig, "options", "script");
+          code = code + "options.render = render\n\n";
         } else if (app.template) {
           code = genImport(parserConfig, "{ render }", "template");
           code = code + "var options = { render }\n\n";
@@ -238,7 +242,7 @@ var vue = unplugin.createUnplugin((parserConfig) => {
 
         return {
           code: template.code,
-          map: template.map,
+          // map:  template.map,
           // ast:  template.ast,
         };
       }
@@ -285,7 +289,8 @@ async function compile(config, vueConfig) {
 function upstreamTransform(config, metroConfig) {
   const transformer =
     config.upstreamTransformer ||
-    require((metroConfig.transformer && metroConfig.transformer.upstreamTransformer)||
+    require((metroConfig.transformer &&
+      metroConfig.transformer.upstreamTransformer) ||
       "metro-react-native-babel-transformer");
   return transformer.transform(config);
 }

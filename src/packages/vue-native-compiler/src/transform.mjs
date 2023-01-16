@@ -38,7 +38,7 @@ async function compile(config, vueConfig) {
 
 // forward to babel transformer
 function upstreamTransform(config, metroConfig) {
-    const transformer = config.upstreamTransformer || require(metroConfig.transformer.upstreamTransformer || 'metro-react-native-babel-transformer')
+    const transformer = config.upstreamTransformer || require(metroConfig.transformer && metroConfig.transformer.upstreamTransformer || 'metro-react-native-babel-transformer')
     return transformer.transform(config)
 }
 

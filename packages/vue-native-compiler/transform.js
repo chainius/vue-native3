@@ -5,7 +5,7 @@ var path = require("path");
 var rollup = require("rollup");
 var compilerSfc = require("@vue/compiler-sfc");
 var compilerDom = require("@vue/compiler-dom");
-var transform_css = require("css-to-react-native-transform");
+var transform_css_imp = require("css-to-react-native-transform");
 var unplugin = require("unplugin");
 
 function _interopDefaultLegacy(e) {
@@ -14,7 +14,8 @@ function _interopDefaultLegacy(e) {
 
 var fs__default = /*#__PURE__*/ _interopDefaultLegacy(fs);
 var path__default = /*#__PURE__*/ _interopDefaultLegacy(path);
-var transform_css__default = /*#__PURE__*/ _interopDefaultLegacy(transform_css);
+var transform_css_imp__default =
+  /*#__PURE__*/ _interopDefaultLegacy(transform_css_imp);
 
 function mixin(options, plugin) {
   for (var key in plugin) {
@@ -82,13 +83,16 @@ const standardTemplateOptions = {
 
 // --------------------------------------------
 
+const transform_css =
+  transform_css_imp__default["default"].default ||
+  transform_css_imp__default["default"];
 function generateStyle(app, id, shortID) {
   var style = compilerSfc.compileStyle({
     id: id,
     source: app.styles.reduce((a, b) => a + b.content + "\n", "").trim(" "),
   });
 
-  style = transform_css__default["default"].default(style.code);
+  style = transform_css(style.code);
 
   const styles = style;
   style = `import { StyleSheet } from 'react-native';\n`;

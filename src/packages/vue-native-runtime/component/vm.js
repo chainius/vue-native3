@@ -78,7 +78,8 @@ export default class VM {
             get:        () => global_config.$root,
         })
 
-        this.vm.$captureError = this.$captureError.bind(this)
+        this.$captureError = this.$captureError.bind(this)
+        this.vm.$captureError = this.$captureError
 
         this.#exposed = this.vm
         this.$slots = this.vm.$slots

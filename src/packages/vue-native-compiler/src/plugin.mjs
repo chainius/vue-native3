@@ -1,6 +1,6 @@
 import { parse as SFCParse, compileStyle, compileScript, compileTemplate } from '@vue/compiler-sfc'
 import { parse as nativeParse } from '@vue/compiler-dom'
-import transform_css from 'css-to-react-native-transform'
+import transform_css_imp from 'css-to-react-native-transform'
 import { createUnplugin } from 'unplugin'
 import mergeTemplateOptions from './merge-template-options.mjs'
 
@@ -36,13 +36,14 @@ const standardTemplateOptions = {
 
 // --------------------------------------------
 
+const transform_css = transform_css_imp.default || transform_css_imp
 function generateStyle(app, id, shortID) {
     var style = compileStyle({
         id:     id,
         source: app.styles.reduce((a, b) => a + b.content + "\n", "").trim(' '),
     })
 
-    style = transform_css.default(style.code)
+    style = transform_css(style.code)
 
     const styles = style
     style = `import { StyleSheet } from 'react-native';\n`

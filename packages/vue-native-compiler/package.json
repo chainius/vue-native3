@@ -1,6 +1,6 @@
 {
   "name": "@vue-native3/compiler",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "vue native compiler",
   "main": "main.js",
   "author": "Chainius (https://www.bit4you.io/)",

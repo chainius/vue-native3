@@ -29,7 +29,7 @@ async function compile(config, vueConfig) {
     })
 
     const res = await bundle.generate({
-        sourcemap: true,
+        sourcemap: false,
         format:    'es'
     })
 

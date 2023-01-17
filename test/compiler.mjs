@@ -138,7 +138,7 @@ async function build() {
     // console.log('input after', now() - start)
 
     const res = await bundle.generate({
-        sourcemap: true,
+        sourcemap: false,
         format:    'es'
     })
 

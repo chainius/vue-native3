@@ -18,6 +18,13 @@
 
 </script> -->
 
+<graphql>
+
+    query {
+        test
+    }
+
+</graphql>
 
 <script>
 

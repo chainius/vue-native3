@@ -129,7 +129,7 @@ export default createUnplugin((parserConfig) => {
                 // add plugins
                 for(var i in app.customBlocks) {
                     const block = app.customBlocks[i]
-                    code = code + genImport(parserConfig, 'block' + i, block.type + '&index=' + i)
+                    code = code + genImport(parserConfig, 'block' + i, "type=" + block.type + '&index=' + i)
                     code += "typeof(block" + i + ") == 'function' && block" + i + "(options)"
                 }
 
@@ -182,10 +182,13 @@ export default createUnplugin((parserConfig) => {
                 }
             }
 
-            if(app.customBlocks && app.customBlocks[0]) {
+            if(path.startsWith('type=')) {
+                // const block = path.split('&')[0].split('=')[1]
+                const index = parseInt(path.split('&')[1].split('=')[1])
+
                 return {
-                    code: app.customBlocks[0].content,
-                    map:  app.customBlocks[0].map,
+                    code: app.customBlocks[index].content,
+                    map:  app.customBlocks[index].map,
                 }
             }
 

@@ -190,7 +190,11 @@ var vue = unplugin.createUnplugin((parserConfig) => {
           const block = app.customBlocks[i];
           code =
             code +
-            genImport(parserConfig, "block" + i, block.type + "&index=" + i);
+            genImport(
+              parserConfig,
+              "block" + i,
+              "type=" + block.type + "&index=" + i
+            );
           code +=
             "typeof(block" + i + ") == 'function' && block" + i + "(options)";
         }
@@ -247,11 +251,18 @@ var vue = unplugin.createUnplugin((parserConfig) => {
         };
       }
 
+      if (path.startsWith("type=")) {
+        // const block = path.split('&')[0].split('=')[1]
+        const index = parseInt(path.split("&")[1].split("=")[1]);
+
+        return {
+          code: app.customBlocks[index].content,
+          map: app.customBlocks[index].map,
+        };
+      }
+
       // generate custom blocks
-      return {
-        code: app.customBlocks[0].content,
-        map: app.customBlocks[0].map,
-      };
+      return null;
     },
   };
 });
@@ -278,7 +289,7 @@ async function compile(config, vueConfig) {
   });
 
   const res = await bundle.generate({
-    sourcemap: true,
+    sourcemap: false,
     format: "es",
   });
 

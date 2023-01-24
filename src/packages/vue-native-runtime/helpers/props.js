@@ -77,7 +77,7 @@ export default function init(config) {
 
     // create instance setup function
     return function(vm, component, _props) {
-        var props = {}
+        const props = {}
 
         Object.defineProperty(props, '__v_isReadonly', {
             get: () => true

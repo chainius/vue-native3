@@ -49,6 +49,7 @@ class VueReactComponent extends Component {
     shouldComponentUpdate(props) {
         if(props != this.props) {
             delete this.#vm.helpers.attrs
+            this.#vm.helpers.trigger_attrs_changed()
             this.#vm.helpers.trigger_props_changed()
         }
 

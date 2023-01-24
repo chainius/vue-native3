@@ -1,11 +1,48 @@
 import React from "react"
 import { StyleSheet } from 'react-native'
+const { customRef } = require('@vue/runtime-core')
 import { watchEffect, version, nextTick, camelize, capitalize, hyphenate } from '../vue-bridge.js'
 import { handleError } from '../helpers/errors'
 import { CompositionContext } from '../app.js'
 import $watch from '../helpers/watcher'
 import { attach } from './features.js'
 
+
+// privat functions
+
+function generateAttributes(props) {
+    if(this.helpers.attrs)
+        return this.helpers.attrs
+
+    var attrs = {}
+    for(var key in props) {
+        if(this.helpers.known_props[key])
+            continue
+
+        attrs[key] = props[key]
+    }
+
+
+    var props_trigger = null
+    var props_tracker = null
+
+    customRef((track, trigger) => {
+        props_trigger = trigger
+        props_tracker = track
+        return {}
+    })
+
+    for(const key in attrs) {
+        Object.defineProperty(attrs, key, { get: () => {
+            props_tracker()
+            return props[key] 
+        }, enumerable: true })
+    }
+
+    this.helpers.trigger_attrs_changed = props_trigger
+    this.helpers.attrs = attrs
+    return attrs
+}
 export default class VM {
 
     __kind = 'VM'
@@ -55,6 +92,7 @@ export default class VM {
     constructor(global_config, options, props) {
         this.#global_config = global_config
 
+      
         // init vm instance
         this.vm = {
             $data:        {},
@@ -66,15 +104,19 @@ export default class VM {
             $options:     options,
             $el:          null,
             $parent:      props.$parent || null,
-            $emit:        this.$emit.bind(this),
+            $emit:        this.$emit.bind(Object.assign({}, this, { props })),
             $forceUpdate: () => this.forceUpdate(),
             $nextTick:    (cb) => nextTick(cb.bind(this)),
             $watch:       this.$watch.bind(this),
         }
 
+        Object.defineProperty(this, 'generateAttributes', {
+            get: () => generateAttributes.bind(this),
+        })
+
         Object.defineProperty(this.vm, '$attrs', {
             enumerable: true,
-            get:        () => this.$attrs,
+            get:        () => this.generateAttributes(this.helpers.instance?.props || props),
         })
 
 
@@ -359,15 +401,17 @@ export default class VM {
     }
 
     $emit(name, ...args) {
+        var props = this.instance?.props || this.props || {}
+
         name = camelize('on-' +name)
         if(this.helpers.emit_validators[name] && !this.helpers.emit_validators[name](...args)) {
             return this.vm
         }
 
-        if(typeof(this.props[name]) == 'function') {
-            this.props[name](...args)
-        } else if(Array.isArray(this.props[name])) {
-            for(var cb of this.props[name]) {
+        if(typeof(props[name]) == 'function') {
+            props[name](...args)
+        } else if(Array.isArray(props[name])) {
+            for(var cb of props[name]) {
                 cb(...args)
             }
         }
@@ -383,17 +427,13 @@ export default class VM {
         if(this.helpers.attrs)
             return this.helpers.attrs
 
-        var attrs = {}
-        for(var key in this.props) {
-            if(this.helpers.known_props[key])
-                continue
+        if(!this.instance)
+            return {}
 
-            attrs[key] = this.props[key]
-        }
-
-        this.helpers.attrs = attrs
-        return attrs
+        return this.generateAttributes(this.instance.props)
     }
+
+ 
 
     get inheritAttrs() {
         return !(this.vm.$options.inheritAttrs === false)

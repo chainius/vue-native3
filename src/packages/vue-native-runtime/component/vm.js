@@ -15,6 +15,11 @@ function generateAttributes(props) {
         return this.helpers.attrs
 
     var attrs = {}
+    
+    Object.defineProperty(attrs, '__v_isReadonly', {
+        get: () => true
+    })
+
     for(var key in props) {
         if(this.helpers.known_props[key])
             continue

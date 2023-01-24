@@ -5,7 +5,7 @@ var path = require("path");
 var rollup = require("rollup");
 var compilerSfc = require("@vue/compiler-sfc");
 var compilerDom = require("@vue/compiler-dom");
-var transform_css = require("css-to-react-native-transform");
+var transform_css_imp = require("css-to-react-native-transform");
 var unplugin = require("unplugin");
 
 function _interopDefaultLegacy(e) {
@@ -14,7 +14,8 @@ function _interopDefaultLegacy(e) {
 
 var fs__default = /*#__PURE__*/ _interopDefaultLegacy(fs);
 var path__default = /*#__PURE__*/ _interopDefaultLegacy(path);
-var transform_css__default = /*#__PURE__*/ _interopDefaultLegacy(transform_css);
+var transform_css_imp__default =
+  /*#__PURE__*/ _interopDefaultLegacy(transform_css_imp);
 
 function mixin(options, plugin) {
   for (var key in plugin) {
@@ -82,13 +83,16 @@ const standardTemplateOptions = {
 
 // --------------------------------------------
 
+const transform_css =
+  transform_css_imp__default["default"].default ||
+  transform_css_imp__default["default"];
 function generateStyle(app, id, shortID) {
   var style = compilerSfc.compileStyle({
     id: id,
     source: app.styles.reduce((a, b) => a + b.content + "\n", "").trim(" "),
   });
 
-  style = transform_css__default["default"](style.code);
+  style = transform_css(style.code);
 
   const styles = style;
   style = `import { StyleSheet } from 'react-native';\n`;
@@ -166,8 +170,12 @@ var vue = unplugin.createUnplugin((parserConfig) => {
         var code = "";
 
         // add template & script
-        if (app.script || app.scriptSetup) {
+        if (app.scriptSetup || (app.script && !app.template)) {
           code = genImport(parserConfig, "options", "script");
+        } else if (app.script) {
+          code = genImport(parserConfig, "{ render }", "template");
+          code = code + genImport(parserConfig, "options", "script");
+          code = code + "options.render = render\n\n";
         } else if (app.template) {
           code = genImport(parserConfig, "{ render }", "template");
           code = code + "var options = { render }\n\n";
@@ -186,7 +194,11 @@ var vue = unplugin.createUnplugin((parserConfig) => {
           const block = app.customBlocks[i];
           code =
             code +
-            genImport(parserConfig, "block" + i, block.type + "&index=" + i);
+            genImport(
+              parserConfig,
+              "block" + i,
+              "type=" + block.type + "&index=" + i
+            );
           code +=
             "typeof(block" + i + ") == 'function' && block" + i + "(options)";
         }
@@ -238,16 +250,23 @@ var vue = unplugin.createUnplugin((parserConfig) => {
 
         return {
           code: template.code,
-          map: template.map,
+          // map:  template.map,
           // ast:  template.ast,
         };
       }
 
+      if (path.startsWith("type=")) {
+        // const block = path.split('&')[0].split('=')[1]
+        const index = parseInt(path.split("&")[1].split("=")[1]);
+
+        return {
+          code: app.customBlocks[index].content,
+          map: app.customBlocks[index].map,
+        };
+      }
+
       // generate custom blocks
-      return {
-        code: app.customBlocks[0].content,
-        map: app.customBlocks[0].map,
-      };
+      return null;
     },
   };
 });
@@ -274,7 +293,7 @@ async function compile(config, vueConfig) {
   });
 
   const res = await bundle.generate({
-    sourcemap: true,
+    sourcemap: false,
     format: "es",
   });
 
@@ -285,7 +304,8 @@ async function compile(config, vueConfig) {
 function upstreamTransform(config, metroConfig) {
   const transformer =
     config.upstreamTransformer ||
-    require(metroConfig.transformer.upstreamTransformer ||
+    require((metroConfig.transformer &&
+      metroConfig.transformer.upstreamTransformer) ||
       "metro-react-native-babel-transformer");
   return transformer.transform(config);
 }
@@ -299,6 +319,9 @@ async function transform(config) {
 
     try {
       metroConfig = require(config.options.projectRoot + "/metro.config");
+
+      if (typeof metroConfig == "function")
+        metroConfig = await metroConfig(config.options.projectRoot);
     } catch (e) {
       console.error("could not load metro config", e);
     }
@@ -308,7 +331,7 @@ async function transform(config) {
 
   // transform vue files
   if (config.filename.endsWith(".vue")) {
-    var vueConfig = metroConfig.transformer?.vue || {};
+    var vueConfig = metroConfig.vue || metroConfig.transformer?.vue || {};
     var app = await compile(config, vueConfig);
 
     // debug compiled code

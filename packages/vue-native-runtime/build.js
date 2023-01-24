@@ -1205,7 +1205,7 @@ class CustomRefImpl {
     this._set(newVal);
   }
 }
-function customRef$1(factory) {
+function customRef$2(factory) {
   return new CustomRefImpl(factory);
 }
 function toRefs(object) {
@@ -8501,7 +8501,7 @@ function resolveOptions(instance, strats = {}) {
   return instance;
 }
 
-const { customRef } = require("@vue/runtime-core");
+const { customRef: customRef$1 } = require("@vue/runtime-core");
 const shared = require("@vue/shared");
 
 function init(config) {
@@ -8584,12 +8584,16 @@ function init(config) {
 
   // create instance setup function
   return function (vm, component, _props) {
-    var props = {};
+    const props = {};
+
+    Object.defineProperty(props, "__v_isReadonly", {
+      get: () => true,
+    });
 
     var props_trigger = null;
     var props_tracker = null;
 
-    customRef((track, trigger) => {
+    customRef$1((track, trigger) => {
       props_trigger = trigger;
       props_tracker = track;
       return {};
@@ -8597,8 +8601,8 @@ function init(config) {
 
     for (var key in config) {
       const fn = config[key].bind(vm, props_tracker, _props);
-      Object.defineProperty(props, key, { get: fn });
-      Object.defineProperty(vm, key, { get: fn });
+      Object.defineProperty(props, key, { get: fn, enumerable: true });
+      Object.defineProperty(vm, key, { get: fn, enumerable: true });
     }
 
     component.$props = props;
@@ -9065,6 +9069,48 @@ function createPathGetter(ctx, path) {
   };
 }
 
+const { customRef } = require("@vue/runtime-core");
+
+// privat functions
+
+function generateAttributes(props) {
+  if (this.helpers.attrs) return this.helpers.attrs;
+
+  var attrs = {};
+
+  Object.defineProperty(attrs, "__v_isReadonly", {
+    get: () => true,
+  });
+
+  for (var key in props) {
+    if (this.helpers.known_props[key]) continue;
+
+    attrs[key] = props[key];
+  }
+
+  var props_trigger = null;
+  var props_tracker = null;
+
+  customRef((track, trigger) => {
+    props_trigger = trigger;
+    props_tracker = track;
+    return {};
+  });
+
+  for (const key in attrs) {
+    Object.defineProperty(attrs, key, {
+      get: () => {
+        props_tracker();
+        return props[key];
+      },
+      enumerable: true,
+    });
+  }
+
+  this.helpers.trigger_attrs_changed = props_trigger;
+  this.helpers.attrs = attrs;
+  return attrs;
+}
 class VM {
   __kind = "VM";
 
@@ -9124,15 +9170,19 @@ class VM {
       $options: options,
       $el: null,
       $parent: props.$parent || null,
-      $emit: this.$emit.bind(this),
+      $emit: this.$emit.bind(Object.assign({}, this, { props })),
       $forceUpdate: () => this.forceUpdate(),
       $nextTick: (cb) => nextTick(cb.bind(this)),
       $watch: this.$watch.bind(this),
     };
 
+    Object.defineProperty(this, "generateAttributes", {
+      get: () => generateAttributes.bind(this),
+    });
+
     Object.defineProperty(this.vm, "$attrs", {
       enumerable: true,
-      get: () => this.$attrs,
+      get: () => this.generateAttributes(this.helpers.instance?.props || props),
     });
 
     Object.defineProperty(this.vm, "$root", {
@@ -9419,6 +9469,8 @@ class VM {
   }
 
   $emit(name, ...args) {
+    var props = this.instance?.props || this.props || {};
+
     name = shared$2.camelize("on-" + name);
     if (
       this.helpers.emit_validators[name] &&
@@ -9427,10 +9479,10 @@ class VM {
       return this.vm;
     }
 
-    if (typeof this.props[name] == "function") {
-      this.props[name](...args);
-    } else if (Array.isArray(this.props[name])) {
-      for (var cb of this.props[name]) {
+    if (typeof props[name] == "function") {
+      props[name](...args);
+    } else if (Array.isArray(props[name])) {
+      for (var cb of props[name]) {
         cb(...args);
       }
     }
@@ -9445,15 +9497,9 @@ class VM {
   get $attrs() {
     if (this.helpers.attrs) return this.helpers.attrs;
 
-    var attrs = {};
-    for (var key in this.props) {
-      if (this.helpers.known_props[key]) continue;
+    if (!this.instance) return {};
 
-      attrs[key] = this.props[key];
-    }
-
-    this.helpers.attrs = attrs;
-    return attrs;
+    return this.generateAttributes(this.instance.props);
   }
 
   get inheritAttrs() {
@@ -9543,6 +9589,7 @@ class VueReactComponent extends React.Component {
   shouldComponentUpdate(props) {
     if (props != this.props) {
       delete this.#vm.helpers.attrs;
+      this.#vm.helpers.trigger_attrs_changed();
       this.#vm.helpers.trigger_props_changed();
     }
 
@@ -10185,7 +10232,7 @@ exports.createRenderer = createRenderer;
 exports.createSSRApp = createApp;
 exports.createTextVNode = createTextVNode;
 exports.createVNode = createVNode;
-exports.customRef = customRef$1;
+exports.customRef = customRef$2;
 exports.defineAsyncComponent = defineAsyncComponent;
 exports.defineComponent = defineComponent;
 exports.defineCustomElement = defineComponent;

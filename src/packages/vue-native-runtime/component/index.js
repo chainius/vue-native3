@@ -13,7 +13,10 @@ class VueReactComponent extends Component {
     constructor(props, vm) {
         super(props)
         this.#vm = vm
+
+        vm.instance = this
         vm.forceUpdate = this.forceUpdate.bind(this)
+        this.__kind = 'VueReactComponent'
 
         if(!vm.helpers.render)
             vm.helpers.render = () => null
@@ -142,7 +145,8 @@ export function defineComponent(app) {
     // generate sync component
     return generateComponent(function(props) {
         const [pre, setup, post] = getSetup()
-        const vm = new VM( global_config, app, props )
+        const vm = new VM( global_config, app, props)
+
 
         pre(vm, props)
         setCurrentInstance(vm)

@@ -8,7 +8,10 @@ import { attach } from './features.js'
 
 export default class VM {
 
+    __kind = 'VM'
+
     helpers = {
+        __kind:                'helpers',
         watch_render_options:  {},
         emit_validators:       {},
         trigger_props_changed: () => {},
@@ -21,6 +24,8 @@ export default class VM {
         },
         render: null,
     }
+
+    instance = null
 
     vm = {}
 

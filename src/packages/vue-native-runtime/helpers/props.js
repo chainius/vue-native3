@@ -30,36 +30,38 @@ export default function init(config) {
 
         // add validators in dev mode
         if(__DEV__) {
-            precheck = function(vm) {
-                if(conf.required && typeof(vm.props[name]) === "undefined") {
+            precheck = function(vm, props) {
+                if(conf.required && typeof(props[name]) === "undefined") {
                     console.warn(`[VueJS] Missing required prop: ${name}`)
                     return
-                } else if(typeof(vm.props[name]) === "undefined") {
+                } else if(typeof(props[name]) === "undefined") {
                     return
                 }
 
-                var expected = assertTypes(vm.props[name], conf.type)
+                var expected = assertTypes(props[name], conf.type)
                 if(expected !== true) {
-                    console.warn(`[VueJS] Invalid prop: type check failed for prop "${name}". Expected ${expected.join(' or ')}, got ${typeof(vm.props[name])}.`)
-                } else if(conf.validator && !conf.validator(vm.props[name])) {
+                    console.warn(`[VueJS] Invalid prop: type check failed for prop "${name}". Expected ${expected.join(' or ')}, got ${typeof(props[name])}.`)
+                } else if(conf.validator && !conf.validator(props[name])) {
                     console.warn(`[VueJS] Invalid prop: custom validator check failed for prop "${name}".`)
                 }
             }
         }
 
         // add direct getter
-        config[name] = function(track) {
-            track()
-            __DEV__ && precheck(this)
+        config[name] = function(track, props) {
+            props = this.instance?.props || props
 
-            if(typeof(this.props[name]) === "undefined" && conf.default) {
+            track()
+            __DEV__ && precheck(this, props)
+
+            if(typeof(props[name]) === "undefined" && conf.default) {
                 if(typeof(conf.default) == 'function')
-                    return conf.default(this.props)
+                    return conf.default(props)
 
                 return conf.default
             }
 
-            return this.props[name]
+            return props[name]
         }
     }
 
@@ -74,8 +76,9 @@ export default function init(config) {
     }
 
     // create instance setup function
-    return (instance, vm) => {
+    return function(vm, component, _props) {
         var props = {}
+
         var props_trigger = null
         var props_tracker = null
 
@@ -86,12 +89,12 @@ export default function init(config) {
         })
 
         for(var key in config) {
-            const fn = config[key].bind(instance, props_tracker)
+            const fn = config[key].bind(vm, props_tracker, _props)
             Object.defineProperty(props, key, { get: fn })
             Object.defineProperty(vm, key, { get: fn })
         }
 
-        vm.$props = props
+        component.$props = props
         return props_trigger
     }
 }

@@ -61,12 +61,12 @@ export function withProps(options) {
         return
 
     var props_setup = init_props(options.props)
-    return function(vm, helpers) {
+    return function(vm, helpers, props) {
         for(var prop in options.props) {
             helpers.known_props[prop] = true
         }
 
-        helpers.trigger_props_changed = props_setup(this, vm)
+        helpers.trigger_props_changed = props_setup(this, vm, props)
     }
 }
 
@@ -177,7 +177,7 @@ export function withSetup(options) {
     }
 
     // call script setup function
-    return function(vm, helpers, props, expose) {
+    return function({vm}, helpers, props, expose) {
         const finaliser = (setup_result) => {
             if(typeof(setup_result) == 'function') {
                 helpers.render = setup_result.bind(vm)

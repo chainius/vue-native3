@@ -8532,22 +8532,22 @@ function init(config) {
 
     // add validators in dev mode
     if (__DEV__) {
-      precheck = function (vm) {
-        if (conf.required && typeof vm.props[name] === "undefined") {
+      precheck = function (vm, props) {
+        if (conf.required && typeof props[name] === "undefined") {
           console.warn(`[VueJS] Missing required prop: ${name}`);
           return;
-        } else if (typeof vm.props[name] === "undefined") {
+        } else if (typeof props[name] === "undefined") {
           return;
         }
 
-        var expected = assertTypes(vm.props[name], conf.type);
+        var expected = assertTypes(props[name], conf.type);
         if (expected !== true) {
           console.warn(
             `[VueJS] Invalid prop: type check failed for prop "${name}". Expected ${expected.join(
               " or "
-            )}, got ${typeof vm.props[name]}.`
+            )}, got ${typeof props[name]}.`
           );
-        } else if (conf.validator && !conf.validator(vm.props[name])) {
+        } else if (conf.validator && !conf.validator(props[name])) {
           console.warn(
             `[VueJS] Invalid prop: custom validator check failed for prop "${name}".`
           );
@@ -8556,17 +8556,19 @@ function init(config) {
     }
 
     // add direct getter
-    config[name] = function (track) {
-      track();
-      __DEV__ && precheck(this);
+    config[name] = function (track, props) {
+      props = this.instance?.props || props;
 
-      if (typeof this.props[name] === "undefined" && conf.default) {
-        if (typeof conf.default == "function") return conf.default(this.props);
+      track();
+      __DEV__ && precheck(this, props);
+
+      if (typeof props[name] === "undefined" && conf.default) {
+        if (typeof conf.default == "function") return conf.default(props);
 
         return conf.default;
       }
 
-      return this.props[name];
+      return props[name];
     };
   }
 
@@ -8581,8 +8583,9 @@ function init(config) {
   }
 
   // create instance setup function
-  return (instance, vm) => {
+  return function (vm, component, _props) {
     var props = {};
+
     var props_trigger = null;
     var props_tracker = null;
 
@@ -8593,12 +8596,12 @@ function init(config) {
     });
 
     for (var key in config) {
-      const fn = config[key].bind(instance, props_tracker);
+      const fn = config[key].bind(vm, props_tracker, _props);
       Object.defineProperty(props, key, { get: fn });
       Object.defineProperty(vm, key, { get: fn });
     }
 
-    vm.$props = props;
+    component.$props = props;
     return props_trigger;
   };
 }
@@ -8756,12 +8759,12 @@ function withProps(options) {
   if (!options.props) return;
 
   var props_setup = init(options.props);
-  return function (vm, helpers) {
+  return function (vm, helpers, props) {
     for (var prop in options.props) {
       helpers.known_props[prop] = true;
     }
 
-    helpers.trigger_props_changed = props_setup(this, vm);
+    helpers.trigger_props_changed = props_setup(this, vm, props);
   };
 }
 
@@ -8864,7 +8867,7 @@ function withSetup(options) {
   }
 
   // call script setup function
-  return function (vm, helpers, props, expose) {
+  return function ({ vm }, helpers, props, expose) {
     const finaliser = (setup_result) => {
       if (typeof setup_result == "function") {
         helpers.render = setup_result.bind(vm);
@@ -9063,7 +9066,10 @@ function createPathGetter(ctx, path) {
 }
 
 class VM {
+  __kind = "VM";
+
   helpers = {
+    __kind: "helpers",
     watch_render_options: {},
     emit_validators: {},
     trigger_props_changed: () => {},
@@ -9076,6 +9082,8 @@ class VM {
     },
     render: null,
   };
+
+  instance = null;
 
   vm = {};
 
@@ -9500,7 +9508,10 @@ class VueReactComponent extends React.Component {
   constructor(props, vm) {
     super(props);
     this.#vm = vm;
+
+    vm.instance = this;
     vm.forceUpdate = this.forceUpdate.bind(this);
+    this.__kind = "VueReactComponent";
 
     if (!vm.helpers.render) vm.helpers.render = () => null;
 

@@ -79,6 +79,11 @@ export default function init(config) {
     return function(vm, component, _props) {
         var props = {}
 
+        Object.defineProperty(props, '__v_isReadonly', {
+            get: () => true
+        })
+
+        
         var props_trigger = null
         var props_tracker = null
 
@@ -90,8 +95,8 @@ export default function init(config) {
 
         for(var key in config) {
             const fn = config[key].bind(vm, props_tracker, _props)
-            Object.defineProperty(props, key, { get: fn })
-            Object.defineProperty(vm, key, { get: fn })
+            Object.defineProperty(props, key, { get: fn, enumerable: true })
+            Object.defineProperty(vm, key, { get: fn, enumerable: true })
         }
 
         component.$props = props
